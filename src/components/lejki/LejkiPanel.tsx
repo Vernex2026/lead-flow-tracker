@@ -32,11 +32,6 @@ export function LejkiPanel() {
     document.documentElement.classList.toggle("dark", dark);
   }, [dark]);
 
-  useEffect(() => {
-    const onResize = () => setCollapsed(window.innerWidth <= 1280);
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, []);
 
   return (
     <div className="flex min-h-screen bg-bg">
