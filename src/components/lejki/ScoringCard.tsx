@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
-import { Plus, Minus, Check, X } from "lucide-react";
+import { Plus, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { ScoreBar } from "@/components/primitives/ScoreBar";
 import { TrendPill } from "@/components/primitives/TrendPill";
 import { Sparkline } from "@/components/primitives/Sparkline";
 import { DateTimePicker } from "@/components/primitives/DateTimePicker";
+import { NumberStepper } from "@/components/primitives/NumberStepper";
+import { AutoTextarea } from "@/components/primitives/AutoTextarea";
 import { useLejkiStore, deriveCurrentScore } from "@/store/lejkiStore";
 import { currentUser } from "@/data/fixtures";
 
