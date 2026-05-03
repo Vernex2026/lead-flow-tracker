@@ -69,7 +69,7 @@
     --destructive: var(--danger-500);
     --destructive-foreground: 0 0% 100%;
     --input: var(--border);
-    --ring: var(--accent-600);
+    --ring: var(--border-strong);
   }
 
   .dark {
@@ -102,7 +102,7 @@
   }
 
   *:focus-visible {
-    outline: 2px solid hsl(var(--accent-600));
+    outline: 2px solid hsl(var(--ink-2));
     outline-offset: 2px;
     border-radius: 4px;
   }
