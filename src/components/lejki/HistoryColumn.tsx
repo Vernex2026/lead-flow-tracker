@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
-import { useLejkiStore } from "@/store/lejkiStore";
+import { useCurrentEvents } from "@/store/lejkiStore";
 import { dayKey, dayLabel } from "@/lib/format";
 import { TimelineEvent } from "./TimelineEvent";
 import {
@@ -12,7 +12,8 @@ import {
 import { Inbox } from "lucide-react";
 
 export function HistoryColumn() {
-  const events = useLejkiStore((s) => s.events);
+  const events = useCurrentEvents();
+  const hasHistory = events.length > 0;
   const [filter, setFilter] = useState<FilterKind>("all");
   const [query, setQuery] = useState("");
   const [sortDesc, setSortDesc] = useState(true);

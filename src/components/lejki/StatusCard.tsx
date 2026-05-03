@@ -14,7 +14,7 @@ import { AutoTextarea } from "@/components/primitives/AutoTextarea";
 import { StatusChip } from "@/components/primitives/StatusChip";
 import { DateTimePicker } from "@/components/primitives/DateTimePicker";
 import { RelativeTime } from "@/components/primitives/RelativeTime";
-import { useLejkiStore, deriveCurrentStatus } from "@/store/lejkiStore";
+import { useLejkiStore, useCurrentEvents, deriveCurrentStatus } from "@/store/lejkiStore";
 import { currentUser } from "@/data/fixtures";
 import { STATUS_LABEL, STATUS_REASONS, type StatusCode } from "@/data/types";
 
@@ -29,7 +29,7 @@ export function StatusCard({
   onEditStart: () => void;
   onClose: () => void;
 }) {
-  const events = useLejkiStore((s) => s.events);
+  const events = useCurrentEvents();
   const addEvent = useLejkiStore((s) => s.addEvent);
   const removeEvent = useLejkiStore((s) => s.removeEvent);
   const cur = deriveCurrentStatus(events);

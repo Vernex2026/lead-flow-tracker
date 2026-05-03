@@ -9,7 +9,7 @@ import { Sparkline } from "@/components/primitives/Sparkline";
 import { DateTimePicker } from "@/components/primitives/DateTimePicker";
 import { NumberStepper } from "@/components/primitives/NumberStepper";
 import { AutoTextarea } from "@/components/primitives/AutoTextarea";
-import { useLejkiStore, deriveCurrentScore } from "@/store/lejkiStore";
+import { useLejkiStore, useCurrentEvents, deriveCurrentScore } from "@/store/lejkiStore";
 import { currentUser } from "@/data/fixtures";
 
 function useCountUp(target: number, duration = 400) {
@@ -42,7 +42,7 @@ export function ScoringCard({
   onEditStart: () => void;
   onClose: () => void;
 }) {
-  const events = useLejkiStore((s) => s.events);
+  const events = useCurrentEvents();
   const addEvent = useLejkiStore((s) => s.addEvent);
   const removeEvent = useLejkiStore((s) => s.removeEvent);
   const { score, delta } = deriveCurrentScore(events);
