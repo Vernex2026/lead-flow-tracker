@@ -1,34 +1,26 @@
-import { useMemo } from "react";
-import { Search, ArrowDown, ArrowUp, SlidersHorizontal, X, Calendar as CalIcon } from "lucide-react";
+import { ArrowDown, ArrowUp, Calendar as CalendarIcon, Search, SlidersHorizontal, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { STATUS_LABEL, type StatusCode } from "@/data/types";
+import {
+  countActive,
+  EMPTY_FILTERS,
+  type AdvancedFilters,
+  type FilterKind,
+  type Period,
+  type ScoreDirection,
+} from "./historyFilters.types";
 
-export type FilterKind = "all" | "status" | "score" | "note" | "system";
-export type ScoreDir = "up" | "down" | "big" | null;
-export type Period = "7d" | "30d" | "90d" | null;
-
-export interface AdvancedFilters {
-  statuses: StatusCode[];
-  scoreDir: ScoreDir;
-  period: Period;
-}
-
-export const EMPTY_FILTERS: AdvancedFilters = {
-  statuses: [],
-  scoreDir: null,
-  period: null,
-};
-
-const PRIMARY: { key: FilterKind; label: string }[] = [
+const PRIMARY_FILTERS: { key: FilterKind; label: string }[] = [
   { key: "all", label: "Wszystko" },
   { key: "status", label: "Status" },
   { key: "score", label: "Scoring" },
 ];
 
-const STATUS_ALL: StatusCode[] = ["new", "qualified", "opportunity", "won", "lost"];
+const ALL_STATUSES: StatusCode[] = ["new", "qualified", "opportunity", "won", "lost"];
+
 const STATUS_TONE: Record<StatusCode, string> = {
   new: "bg-status-new text-status-new-fg border-status-new",
   qualified: "bg-status-qualified text-status-qualified-fg border-status-qualified",
@@ -37,23 +29,26 @@ const STATUS_TONE: Record<StatusCode, string> = {
   lost: "bg-status-lost text-status-lost-fg border-status-lost",
 };
 
-const PERIODS: { key: Period; label: string }[] = [
+const PERIOD_OPTIONS: { key: Exclude<Period, null>; label: string }[] = [
   { key: "7d", label: "Ostatnie 7 dni" },
   { key: "30d", label: "Ostatnie 30 dni" },
   { key: "90d", label: "3 miesiące" },
 ];
 
-function Chip({
-  active,
-  onClick,
-  children,
-  tone,
-}: {
+const SCORE_DIR_LABEL: Record<Exclude<ScoreDirection, null>, string> = {
+  up: "↑ Wzrost",
+  down: "↓ Spadek",
+  big: "≥ +10 pkt",
+};
+
+interface ChipProps {
   active: boolean;
   onClick: () => void;
   children: React.ReactNode;
   tone?: string;
-}) {
+}
+
+function Chip({ active, onClick, children, tone }: ChipProps) {
   return (
     <button
       onClick={onClick}
@@ -69,6 +64,18 @@ function Chip({
   );
 }
 
+interface HistoryFiltersProps {
+  filter: FilterKind;
+  onFilter: (filter: FilterKind) => void;
+  query: string;
+  onQuery: (query: string) => void;
+  sortDesc: boolean;
+  onToggleSort: () => void;
+  advanced: AdvancedFilters;
+  onAdvanced: (advanced: AdvancedFilters) => void;
+  noteCount?: number;
+}
+
 export function HistoryFilters({
   filter,
   onFilter,
@@ -79,39 +86,22 @@ export function HistoryFilters({
   advanced,
   onAdvanced,
   noteCount = 0,
-}: {
-  filter: FilterKind;
-  onFilter: (f: FilterKind) => void;
-  query: string;
-  onQuery: (q: string) => void;
-  sortDesc: boolean;
-  onToggleSort: () => void;
-  advanced: AdvancedFilters;
-  onAdvanced: (a: AdvancedFilters) => void;
-  noteCount?: number;
-}) {
-  const activeCount = useMemo(() => {
-    let c = 0;
-    c += advanced.statuses.length;
-    if (advanced.scoreDir) c += 1;
-    if (advanced.period) c += 1;
-    return c;
-  }, [advanced]);
+}: HistoryFiltersProps) {
+  const activeCount = countActive(advanced);
 
-  const toggleStatus = (s: StatusCode) => {
+  const toggleStatus = (status: StatusCode) =>
     onAdvanced({
       ...advanced,
-      statuses: advanced.statuses.includes(s)
-        ? advanced.statuses.filter((x) => x !== s)
-        : [...advanced.statuses, s],
+      statuses: advanced.statuses.includes(status)
+        ? advanced.statuses.filter((s) => s !== status)
+        : [...advanced.statuses, status],
     });
-  };
 
-  const setScoreDir = (d: ScoreDir) =>
-    onAdvanced({ ...advanced, scoreDir: advanced.scoreDir === d ? null : d });
+  const toggleScoreDir = (dir: Exclude<ScoreDirection, null>) =>
+    onAdvanced({ ...advanced, scoreDir: advanced.scoreDir === dir ? null : dir });
 
-  const setPeriod = (p: Period) =>
-    onAdvanced({ ...advanced, period: advanced.period === p ? null : p });
+  const togglePeriod = (period: Exclude<Period, null>) =>
+    onAdvanced({ ...advanced, period: advanced.period === period ? null : period });
 
   const clearAll = () => onAdvanced(EMPTY_FILTERS);
 
@@ -119,28 +109,19 @@ export function HistoryFilters({
     <div className="space-y-2.5">
       <div className="flex flex-wrap items-center gap-2">
         <div className="inline-flex rounded-md border border-border bg-surface p-0.5">
-          {PRIMARY.map((f) => (
-            <button
-              key={f.key}
-              onClick={() => onFilter(f.key)}
-              className={cn(
-                "rounded-[6px] px-2.5 py-1.5 text-[13px] font-medium transition-colors",
-                filter === f.key ? "bg-surface-2 text-ink-1" : "text-ink-3 hover:text-ink-1",
-              )}
+          {PRIMARY_FILTERS.map((option) => (
+            <FilterTab
+              key={option.key}
+              active={filter === option.key}
+              onClick={() => onFilter(option.key)}
             >
-              {f.label}
-            </button>
+              {option.label}
+            </FilterTab>
           ))}
           {noteCount > 0 && (
-            <button
-              onClick={() => onFilter("note")}
-              className={cn(
-                "rounded-[6px] px-2.5 py-1.5 text-[13px] font-medium transition-colors",
-                filter === "note" ? "bg-surface-2 text-ink-1" : "text-ink-3 hover:text-ink-1",
-              )}
-            >
+            <FilterTab active={filter === "note"} onClick={() => onFilter("note")}>
               Notatki <span className="tnum text-ink-4">({noteCount})</span>
-            </button>
+            </FilterTab>
           )}
         </div>
 
@@ -187,58 +168,43 @@ export function HistoryFilters({
             </Button>
           </PopoverTrigger>
           <PopoverContent align="end" className="w-[340px] space-y-4 p-4">
-            <div>
-              <div className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-ink-3">
-                Status leada
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {STATUS_ALL.map((s) => (
-                  <Chip
-                    key={s}
-                    active={advanced.statuses.includes(s)}
-                    onClick={() => toggleStatus(s)}
-                    tone={advanced.statuses.includes(s) ? STATUS_TONE[s] : undefined}
-                  >
-                    {STATUS_LABEL[s]}
-                  </Chip>
-                ))}
-              </div>
-            </div>
+            <FilterGroup label="Status leada">
+              {ALL_STATUSES.map((status) => (
+                <Chip
+                  key={status}
+                  active={advanced.statuses.includes(status)}
+                  onClick={() => toggleStatus(status)}
+                  tone={advanced.statuses.includes(status) ? STATUS_TONE[status] : undefined}
+                >
+                  {STATUS_LABEL[status]}
+                </Chip>
+              ))}
+            </FilterGroup>
 
-            <div>
-              <div className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-ink-3">
-                Zmiana punktacji
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                <Chip active={advanced.scoreDir === "up"} onClick={() => setScoreDir("up")}>
-                  ↑ Wzrost
+            <FilterGroup label="Zmiana punktacji">
+              {(Object.keys(SCORE_DIR_LABEL) as Exclude<ScoreDirection, null>[]).map((dir) => (
+                <Chip
+                  key={dir}
+                  active={advanced.scoreDir === dir}
+                  onClick={() => toggleScoreDir(dir)}
+                >
+                  {SCORE_DIR_LABEL[dir]}
                 </Chip>
-                <Chip active={advanced.scoreDir === "down"} onClick={() => setScoreDir("down")}>
-                  ↓ Spadek
-                </Chip>
-                <Chip active={advanced.scoreDir === "big"} onClick={() => setScoreDir("big")}>
-                  ≥ +10 punktów
-                </Chip>
-              </div>
-            </div>
+              ))}
+            </FilterGroup>
 
-            <div>
-              <div className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-ink-3">
-                Okres
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {PERIODS.map((p) => (
-                  <Chip
-                    key={p.key}
-                    active={advanced.period === p.key}
-                    onClick={() => setPeriod(p.key)}
-                  >
-                    <CalIcon className="mr-1 inline h-3 w-3" />
-                    {p.label}
-                  </Chip>
-                ))}
-              </div>
-            </div>
+            <FilterGroup label="Okres">
+              {PERIOD_OPTIONS.map((option) => (
+                <Chip
+                  key={option.key}
+                  active={advanced.period === option.key}
+                  onClick={() => togglePeriod(option.key)}
+                >
+                  <CalendarIcon className="mr-1 inline h-3 w-3" />
+                  {option.label}
+                </Chip>
+              ))}
+            </FilterGroup>
 
             <div className="flex items-center justify-between border-t border-border pt-3">
               <Button
@@ -258,42 +224,22 @@ export function HistoryFilters({
         </Popover>
       </div>
 
-      {(advanced.statuses.length > 0 || advanced.scoreDir || advanced.period) && (
+      {activeCount > 0 && (
         <div className="flex flex-wrap items-center gap-1.5">
-          {advanced.statuses.map((s) => (
-            <button
-              key={s}
-              onClick={() => toggleStatus(s)}
-              className={cn(
-                "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium",
-                STATUS_TONE[s],
-              )}
-            >
-              {STATUS_LABEL[s]}
-              <X className="h-2.5 w-2.5" />
-            </button>
+          {advanced.statuses.map((status) => (
+            <ActivePill key={status} onClear={() => toggleStatus(status)} className={STATUS_TONE[status]}>
+              {STATUS_LABEL[status]}
+            </ActivePill>
           ))}
           {advanced.scoreDir && (
-            <button
-              onClick={() => setScoreDir(advanced.scoreDir)}
-              className="inline-flex items-center gap-1 rounded-full border border-border bg-surface-2 px-2 py-0.5 text-[11px] font-medium text-ink-2"
-            >
-              {advanced.scoreDir === "up"
-                ? "↑ Wzrost"
-                : advanced.scoreDir === "down"
-                ? "↓ Spadek"
-                : "≥ +10 pkt"}
-              <X className="h-2.5 w-2.5" />
-            </button>
+            <ActivePill onClear={() => toggleScoreDir(advanced.scoreDir!)}>
+              {SCORE_DIR_LABEL[advanced.scoreDir]}
+            </ActivePill>
           )}
           {advanced.period && (
-            <button
-              onClick={() => setPeriod(advanced.period)}
-              className="inline-flex items-center gap-1 rounded-full border border-border bg-surface-2 px-2 py-0.5 text-[11px] font-medium text-ink-2"
-            >
-              {PERIODS.find((p) => p.key === advanced.period)?.label}
-              <X className="h-2.5 w-2.5" />
-            </button>
+            <ActivePill onClear={() => togglePeriod(advanced.period!)}>
+              {PERIOD_OPTIONS.find((p) => p.key === advanced.period)?.label}
+            </ActivePill>
           )}
           <button
             onClick={clearAll}
@@ -304,5 +250,61 @@ export function HistoryFilters({
         </div>
       )}
     </div>
+  );
+}
+
+function FilterTab({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "rounded-[6px] px-2.5 py-1.5 text-[13px] font-medium transition-colors",
+        active ? "bg-surface-2 text-ink-1" : "text-ink-3 hover:text-ink-1",
+      )}
+    >
+      {children}
+    </button>
+  );
+}
+
+function FilterGroup({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <div className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-ink-3">
+        {label}
+      </div>
+      <div className="flex flex-wrap gap-1.5">{children}</div>
+    </div>
+  );
+}
+
+function ActivePill({
+  children,
+  onClear,
+  className,
+}: {
+  children: React.ReactNode;
+  onClear: () => void;
+  className?: string;
+}) {
+  return (
+    <button
+      onClick={onClear}
+      className={cn(
+        "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium",
+        className ?? "border-border bg-surface-2 text-ink-2",
+      )}
+    >
+      {children}
+      <X className="h-2.5 w-2.5" />
+    </button>
   );
 }

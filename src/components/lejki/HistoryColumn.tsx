@@ -1,26 +1,27 @@
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
+import { Inbox } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useCurrentEvents } from "@/store/lejkiStore";
 import { dayKey, dayLabel } from "@/lib/format";
 import { TimelineEvent } from "./TimelineEvent";
+import { HistoryFilters } from "./HistoryFilters";
 import {
-  HistoryFilters,
   EMPTY_FILTERS,
-  type FilterKind,
   type AdvancedFilters,
-} from "./HistoryFilters";
-import { Inbox } from "lucide-react";
-import { Button } from "@/components/ui/button";
+  type FilterKind,
+} from "./historyFilters.types";
+import { filterEvents, groupByDay } from "./historyFilter";
 
-export function HistoryColumn({
-  onSetStatus,
-  onAddScore,
-}: {
+interface HistoryColumnProps {
   onSetStatus?: () => void;
   onAddScore?: () => void;
-}) {
+}
+
+export function HistoryColumn({ onSetStatus, onAddScore }: HistoryColumnProps) {
   const events = useCurrentEvents();
   const hasHistory = events.length > 0;
+
   const [filter, setFilter] = useState<FilterKind>("all");
   const [query, setQuery] = useState("");
   const [sortDesc, setSortDesc] = useState(true);
@@ -31,64 +32,12 @@ export function HistoryColumn({
     [events],
   );
 
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    const now = Date.now();
-    const periodMs =
-      advanced.period === "7d"
-        ? 7 * 86400_000
-        : advanced.period === "30d"
-        ? 30 * 86400_000
-        : advanced.period === "90d"
-        ? 90 * 86400_000
-        : null;
+  const filtered = useMemo(
+    () => filterEvents(events, { filter, advanced, query, sortDesc }),
+    [events, filter, advanced, query, sortDesc],
+  );
 
-    return events
-      .filter((e) => {
-        const k = e.payload.kind;
-        if (filter === "status" && k !== "status_change") return false;
-        if (filter === "score" && k !== "score_change") return false;
-        if (filter === "note" && k !== "note") return false;
-        if (filter === "system" && k !== "system") return false;
-
-        if (advanced.statuses.length > 0) {
-          if (k !== "status_change") return false;
-          if (!advanced.statuses.includes(e.payload.to)) return false;
-        }
-        if (advanced.scoreDir) {
-          if (k !== "score_change") return false;
-          const d = e.payload.delta;
-          if (advanced.scoreDir === "up" && d <= 0) return false;
-          if (advanced.scoreDir === "down" && d >= 0) return false;
-          if (advanced.scoreDir === "big" && d < 10) return false;
-        }
-        if (periodMs !== null) {
-          if (now - new Date(e.occurredAt).getTime() > periodMs) return false;
-        }
-        if (q) {
-          const hay =
-            JSON.stringify(e.payload).toLowerCase() +
-            ("system" in e.actor ? "system" : e.actor.name.toLowerCase());
-          if (!hay.includes(q)) return false;
-        }
-        return true;
-      })
-      .sort((a, b) =>
-        sortDesc
-          ? b.occurredAt.localeCompare(a.occurredAt)
-          : a.occurredAt.localeCompare(b.occurredAt),
-      );
-  }, [events, filter, query, sortDesc, advanced]);
-
-  const groups = useMemo(() => {
-    const m = new Map<string, typeof filtered>();
-    for (const e of filtered) {
-      const k = dayKey(e.occurredAt);
-      if (!m.has(k)) m.set(k, [] as any);
-      m.get(k)!.push(e);
-    }
-    return Array.from(m.entries());
-  }, [filtered]);
+  const groups = useMemo(() => groupByDay(filtered, (e) => dayKey(e.occurredAt)), [filtered]);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col space-y-4">
@@ -116,20 +65,14 @@ export function HistoryColumn({
           {!hasHistory ? (
             <EmptyHistory onSetStatus={onSetStatus} onAddScore={onAddScore} />
           ) : filtered.length === 0 ? (
-            <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
-              <Inbox className="h-8 w-8 text-ink-4" />
-              <div className="text-sm font-medium text-ink-2">Brak wyników</div>
-              <p className="max-w-xs text-xs text-ink-3">
-                Spróbuj zmienić filtr lub wyczyścić wyszukiwanie.
-              </p>
-            </div>
+            <NoResults />
           ) : (
             <LayoutGroup>
               <div className="space-y-6">
                 <AnimatePresence initial={false}>
-                  {groups.map(([k, items]) => (
+                  {groups.map(([key, items]) => (
                     <motion.div
-                      key={k}
+                      key={key}
                       layout
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
@@ -146,8 +89,8 @@ export function HistoryColumn({
                           aria-hidden
                         />
                         <AnimatePresence initial={false}>
-                          {items.map((e) => (
-                            <TimelineEvent key={e.id} event={e} />
+                          {items.map((event) => (
+                            <TimelineEvent key={event.id} event={event} />
                           ))}
                         </AnimatePresence>
                       </ul>
@@ -163,6 +106,18 @@ export function HistoryColumn({
   );
 }
 
+function NoResults() {
+  return (
+    <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
+      <Inbox className="h-8 w-8 text-ink-4" />
+      <div className="text-sm font-medium text-ink-2">Brak wyników</div>
+      <p className="max-w-xs text-xs text-ink-3">
+        Spróbuj zmienić filtr lub wyczyścić wyszukiwanie.
+      </p>
+    </div>
+  );
+}
+
 function EmptyHistory({
   onSetStatus,
   onAddScore,
@@ -172,14 +127,7 @@ function EmptyHistory({
 }) {
   return (
     <div className="mx-auto flex max-w-md flex-col items-center justify-center gap-4 py-12 text-center">
-      <svg
-        width="180"
-        height="80"
-        viewBox="0 0 180 80"
-        fill="none"
-        aria-hidden
-        className="text-ink-4"
-      >
+      <svg width="180" height="80" viewBox="0 0 180 80" fill="none" aria-hidden className="text-ink-4">
         <line x1="20" y1="40" x2="160" y2="40" stroke="currentColor" strokeWidth="1" strokeDasharray="3 4" />
         <circle cx="40" cy="40" r="4" stroke="currentColor" strokeWidth="1" fill="hsl(var(--surface))" />
         <circle cx="90" cy="40" r="4" stroke="currentColor" strokeWidth="1" fill="hsl(var(--surface))" />
@@ -190,12 +138,8 @@ function EmptyHistory({
         Zacznij od ustawienia statusu lub dodania punktacji, aby śledzić postęp tego kontaktu.
       </p>
       <div className="mt-1 flex gap-2">
-        <Button variant="outline" size="sm" onClick={onSetStatus}>
-          + Ustaw status
-        </Button>
-        <Button variant="outline" size="sm" onClick={onAddScore}>
-          + Dodaj punkty
-        </Button>
+        <Button variant="outline" size="sm" onClick={onSetStatus}>+ Ustaw status</Button>
+        <Button variant="outline" size="sm" onClick={onAddScore}>+ Dodaj punkty</Button>
       </div>
     </div>
   );

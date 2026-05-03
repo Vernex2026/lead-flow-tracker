@@ -1,32 +1,40 @@
 import {
-  User,
-  ShieldCheck,
-  Tag,
-  Filter,
-  MessageSquare,
-  Globe,
-  FileText,
-  Package,
-  ShoppingBag,
   Activity,
-  Workflow,
   BookOpen,
+  FileText,
+  Filter,
+  Globe,
+  MessageSquare,
+  Package,
+  ShieldCheck,
+  ShoppingBag,
+  Tag,
+  User,
+  Workflow,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/primitives/Avatar";
-import { useLejkiStore } from "@/store/lejkiStore";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useLejkiStore } from "@/store/lejkiStore";
 
-type Item = { key: string; label: string; icon: LucideIcon };
-type Group = { title?: string; items: Item[] };
+interface NavItem {
+  key: string;
+  label: string;
+  icon: LucideIcon;
+}
 
-const GROUPS: Group[] = [
+interface NavGroup {
+  title: string;
+  items: NavItem[];
+}
+
+const NAV_GROUPS: NavGroup[] = [
   {
     title: "Profil",
     items: [
@@ -67,21 +75,18 @@ const GROUPS: Group[] = [
   },
 ];
 
-export function ContactSidebar({
-  collapsed,
-  active,
-  onSelect,
-  onNavigate,
-}: {
+interface ContactSidebarProps {
   collapsed: boolean;
   active: string;
   onSelect: (key: string) => void;
   onNavigate?: () => void;
-}) {
+}
+
+export function ContactSidebar({ collapsed, active, onSelect, onNavigate }: ContactSidebarProps) {
   const owner = useLejkiStore((s) => s.owner);
 
-  const handleSelect = (k: string) => {
-    onSelect(k);
+  const handleSelect = (key: string) => {
+    onSelect(key);
     onNavigate?.();
   };
 
@@ -94,68 +99,29 @@ export function ContactSidebar({
         )}
       >
         <nav className="flex-1 overflow-y-auto px-1.5 py-3">
-          {GROUPS.map((group, gi) => (
-            <div key={gi} className={gi > 0 ? "mt-3" : ""}>
-              {!collapsed && group.title && (
+          {NAV_GROUPS.map((group, groupIndex) => (
+            <div key={group.title} className={groupIndex > 0 ? "mt-3" : ""}>
+              {!collapsed && (
                 <div className="mb-1 px-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-ink-4">
                   {group.title}
                 </div>
               )}
-              {collapsed && gi > 0 && <div className="mx-1.5 mb-2 h-px bg-border" />}
+              {collapsed && groupIndex > 0 && <div className="mx-1.5 mb-2 h-px bg-border" />}
               <ul className="space-y-0.5">
-                {group.items.map((item) => {
-                  const isActive = item.key === active;
-                  const Icon = item.icon;
-                  const button = (
-                    <button
-                      aria-label={item.label}
-                      onClick={() => handleSelect(item.key)}
-                      className={cn(
-                        "relative flex w-full items-center transition-[opacity,background-color,color]",
-                        collapsed
-                          ? "justify-center rounded-md px-0 py-2"
-                          : "gap-2.5 rounded-md px-2.5 py-2 text-[13px]",
-                        isActive
-                          ? "bg-surface-2 font-medium text-ink-1"
-                          : "text-ink-3 hover:bg-surface-2 hover:text-ink-1",
-                      )}
-                    >
-                      {isActive && (
-                        <span
-                          aria-hidden
-                          className="absolute left-0 top-1.5 bottom-1.5 w-0.5 rounded-r bg-accent-600"
-                        />
-                      )}
-                      <Icon className="h-5 w-5 shrink-0" strokeWidth={1.75} />
-                      {!collapsed && (
-                        <span className="truncate transition-opacity duration-75">
-                          {item.label}
-                        </span>
-                      )}
-                    </button>
-                  );
-
-                  return (
-                    <li key={item.key}>
-                      {collapsed ? (
-                        <Tooltip>
-                          <TooltipTrigger asChild>{button}</TooltipTrigger>
-                          <TooltipContent side="right" sideOffset={8}>
-                            {item.label}
-                          </TooltipContent>
-                        </Tooltip>
-                      ) : (
-                        button
-                      )}
-                    </li>
-                  );
-                })}
+                {group.items.map((item) => (
+                  <SidebarItem
+                    key={item.key}
+                    item={item}
+                    active={item.key === active}
+                    collapsed={collapsed}
+                    onSelect={handleSelect}
+                  />
+                ))}
               </ul>
             </div>
           ))}
         </nav>
 
-        {/* User avatar pinned bottom-left (Slack/Linear/Notion pattern) */}
         <div
           className={cn(
             "sticky bottom-0 border-t border-border bg-surface",
@@ -191,5 +157,58 @@ export function ContactSidebar({
         </div>
       </aside>
     </TooltipProvider>
+  );
+}
+
+interface SidebarItemProps {
+  item: NavItem;
+  active: boolean;
+  collapsed: boolean;
+  onSelect: (key: string) => void;
+}
+
+function SidebarItem({ item, active, collapsed, onSelect }: SidebarItemProps) {
+  const { Icon } = { Icon: item.icon };
+
+  const button = (
+    <button
+      aria-label={item.label}
+      onClick={() => onSelect(item.key)}
+      className={cn(
+        "relative flex w-full items-center transition-[opacity,background-color,color]",
+        collapsed
+          ? "justify-center rounded-md px-0 py-2"
+          : "gap-2.5 rounded-md px-2.5 py-2 text-[13px]",
+        active
+          ? "bg-surface-2 font-medium text-ink-1"
+          : "text-ink-3 hover:bg-surface-2 hover:text-ink-1",
+      )}
+    >
+      {active && (
+        <span
+          aria-hidden
+          className="absolute bottom-1.5 left-0 top-1.5 w-0.5 rounded-r bg-accent-600"
+        />
+      )}
+      <Icon className="h-5 w-5 shrink-0" strokeWidth={1.75} />
+      {!collapsed && (
+        <span className="truncate transition-opacity duration-75">{item.label}</span>
+      )}
+    </button>
+  );
+
+  return (
+    <li>
+      {collapsed ? (
+        <Tooltip>
+          <TooltipTrigger asChild>{button}</TooltipTrigger>
+          <TooltipContent side="right" sideOffset={8}>
+            {item.label}
+          </TooltipContent>
+        </Tooltip>
+      ) : (
+        button
+      )}
+    </li>
   );
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { Plus, Check, X } from "lucide-react";
@@ -10,28 +10,37 @@ import { DateTimePicker } from "@/components/primitives/DateTimePicker";
 import { NumberStepper } from "@/components/primitives/NumberStepper";
 import { AutoTextarea } from "@/components/primitives/AutoTextarea";
 import { useLejkiStore, useCurrentEvents, deriveCurrentScore } from "@/store/lejkiStore";
+import { useCountUp } from "@/hooks/use-count-up";
 import { currentUser } from "@/data/fixtures";
+import type { TimelineEvent } from "@/data/types";
 
-function useCountUp(target: number, duration = 400) {
-  const [v, setV] = useState(target);
-  useEffect(() => {
-    const start = v;
-    const diff = target - start;
-    if (diff === 0) return;
-    let raf = 0;
-    const t0 = performance.now();
-    const tick = (t: number) => {
-      const p = Math.min(1, (t - t0) / duration);
-      const eased = 1 - Math.pow(1 - p, 3);
-      setV(Math.round(start + diff * eased));
-      if (p < 1) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [target]);
-  return v;
-}
+const MIN_SCORE = 0;
+const MAX_SCORE = 100;
+const DEFAULT_POINTS = 5;
+const TOAST_DURATION_MS = 5_000;
+
+const clampScore = (score: number) => Math.max(MIN_SCORE, Math.min(MAX_SCORE, score));
+
+const sparklineFromEvents = (events: TimelineEvent[]): number[] =>
+  events
+    .filter((e) => e.payload.kind === "score_change")
+    .sort((a, b) => a.occurredAt.localeCompare(b.occurredAt))
+    .map((e) => (e.payload.kind === "score_change" ? e.payload.to : 0));
+
+const buildScoreEvent = (
+  from: number,
+  to: number,
+  comment: string,
+  occurredAt: string,
+): TimelineEvent => ({
+  id: `e_${Date.now()}`,
+  type: "score_change",
+  occurredAt,
+  createdAt: new Date().toISOString(),
+  actor: currentUser,
+  payload: { kind: "score_change", delta: to - from, from, to, comment },
+  edits: [],
+});
 
 export function ScoringCard({
   isEditing,
@@ -46,43 +55,27 @@ export function ScoringCard({
   const addEvent = useLejkiStore((s) => s.addEvent);
   const removeEvent = useLejkiStore((s) => s.removeEvent);
   const { score, delta } = deriveCurrentScore(events);
-  const animScore = useCountUp(score);
+  const animatedScore = useCountUp(score);
+  const sparkValues = useMemo(() => sparklineFromEvents(events), [events]);
 
-  const editing = isEditing;
-  const [pts, setPts] = useState(5);
+  const [points, setPoints] = useState(DEFAULT_POINTS);
   const [comment, setComment] = useState("");
-  const [when, setWhen] = useState(new Date().toISOString());
+  const [occurredAt, setOccurredAt] = useState(() => new Date().toISOString());
 
-  const sparkValues = (() => {
-    const sorted = [...events]
-      .filter((e) => e.payload.kind === "score_change")
-      .sort((a, b) => a.occurredAt.localeCompare(b.occurredAt));
-    return sorted.map((e) => (e.payload.kind === "score_change" ? e.payload.to : 0));
-  })();
+  const projectedScore = clampScore(score + points);
+  const canSave = points !== 0;
 
   const save = () => {
-    const newScore = Math.max(0, Math.min(100, score + pts));
-    const id = `e_${Date.now()}`;
-    const ev = {
-      id,
-      type: "score_change" as const,
-      occurredAt: when,
-      createdAt: new Date().toISOString(),
-      actor: currentUser,
-      payload: { kind: "score_change" as const, delta: newScore - score, from: score, to: newScore, comment },
-      edits: [],
-    };
-    addEvent(ev);
+    const event = buildScoreEvent(score, projectedScore, comment, occurredAt);
+    addEvent(event);
     onClose();
-    setPts(5);
+    setPoints(DEFAULT_POINTS);
     setComment("");
-    toast.success(`Punktacja: ${newScore}`, {
-      action: { label: "Cofnij", onClick: () => removeEvent(id) },
-      duration: 5000,
+    toast.success(`Punktacja: ${projectedScore}`, {
+      action: { label: "Cofnij", onClick: () => removeEvent(event.id) },
+      duration: TOAST_DURATION_MS,
     });
   };
-
-  const newValue = Math.max(0, Math.min(100, score + pts));
 
   return (
     <section className="rounded-lg border border-border bg-surface p-5 shadow-xs">
@@ -90,7 +83,7 @@ export function ScoringCard({
         <h3 className="text-[12px] font-semibold uppercase tracking-wider text-ink-3">
           Punktacja
         </h3>
-        {!editing && (
+        {!isEditing && (
           <Button
             variant="ghost"
             size="sm"
@@ -106,21 +99,21 @@ export function ScoringCard({
 
       <div className="flex min-w-0 items-baseline gap-1.5">
         <span className="tnum text-[28px] font-semibold leading-none text-ink-1">
-          {animScore}
+          {animatedScore}
         </span>
-        <span className="tnum text-sm text-ink-3">/ 100</span>
+        <span className="tnum text-sm text-ink-3">/ {MAX_SCORE}</span>
         <TrendPill delta={delta} suffix="vs. 7 dni" />
       </div>
 
-      <ScoreBar value={animScore} />
+      <ScoreBar value={animatedScore} />
 
       <div className="mt-4 flex items-center justify-between gap-2">
         <span className="text-[11px] uppercase tracking-wider text-ink-3">Trend</span>
-        <Sparkline values={sparkValues.length ? sparkValues : [0, 0]} />
+        <Sparkline values={sparkValues.length > 0 ? sparkValues : [0, 0]} />
       </div>
 
       <AnimatePresence>
-        {editing && (
+        {isEditing && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
@@ -134,11 +127,11 @@ export function ScoringCard({
                   Punkty do dodania
                 </label>
                 <div className="flex flex-wrap items-center gap-2">
-                  <NumberStepper value={pts} onChange={setPts} />
+                  <NumberStepper value={points} onChange={setPoints} />
                   <span className="text-[12px] text-ink-3">
                     →{" "}
-                    <span className="tnum font-medium text-ink-1">{newValue}</span>
-                    <span className="text-ink-3"> / 100</span>
+                    <span className="tnum font-medium text-ink-1">{projectedScore}</span>
+                    <span className="text-ink-3"> / {MAX_SCORE}</span>
                   </span>
                 </div>
               </div>
@@ -146,7 +139,7 @@ export function ScoringCard({
                 <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-ink-3">
                   Data
                 </label>
-                <DateTimePicker value={when} onChange={setWhen} />
+                <DateTimePicker value={occurredAt} onChange={setOccurredAt} />
               </div>
               <div>
                 <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-ink-3">
@@ -162,7 +155,7 @@ export function ScoringCard({
                 <Button variant="ghost" size="sm" onClick={onClose}>
                   <X className="mr-1 h-3.5 w-3.5" />Anuluj
                 </Button>
-                <Button size="sm" onClick={save} disabled={pts === 0}>
+                <Button size="sm" onClick={save} disabled={!canSave}>
                   <Check className="mr-1 h-3.5 w-3.5" />Zapisz
                 </Button>
               </div>
