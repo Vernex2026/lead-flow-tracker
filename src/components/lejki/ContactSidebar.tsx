@@ -81,7 +81,7 @@ export function ContactSidebar({
       <aside
         className={cn(
           "sticky top-0 z-20 h-screen shrink-0 border-r border-border bg-surface transition-[width] duration-200",
-          collapsed ? "w-[56px]" : "w-[240px]",
+          collapsed ? "w-[76px]" : "w-[240px]",
         )}
       >
         <div
