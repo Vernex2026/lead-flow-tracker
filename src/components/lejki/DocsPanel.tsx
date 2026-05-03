@@ -1,187 +1,311 @@
-const SECTIONS: { id: string; title: string; body: React.ReactNode }[] = [
+import { ReactNode } from "react";
+
+type Section = { id: string; title: string; body: ReactNode };
+
+const SECTIONS: Section[] = [
   {
-    id: "filozofia",
-    title: "Filozofia projektu",
+    id: "diagnoza",
+    title: "1. Diagnoza problemu",
     body: (
       <>
-        <p>
-          Redesign zakładki <strong>Lejki</strong> opiera się na zasadzie{" "}
-          <em>Silent Luxury</em>: interfejs ma znikać, a treść — status i punktacja leada — ma
-          być od razu czytelna. Każdy piksel musi mieć powód. Dlatego unikamy dekoracji,
-          gradientów, agresywnych kolorów i „materiałowych" cieni.
+        <h3>Co było największym problemem?</h3>
+        <p className="font-medium text-ink-1">
+          Nie grafika. Nie kolory. Architektura informacji.
         </p>
         <p>
-          Główny cel zakładki to dwie operacje sprzedażowe wykonywane wielokrotnie dziennie:
-          <strong> zmiana statusu</strong> oraz <strong>dopisywanie punktów</strong>. Cała
-          architektura informacji wynika z tego, że muszą one być wykonywalne w 1–2
-          kliknięciach, z pełną historią zmian dostępną obok.
+          Oryginalna zakładka cierpiała na jeden fundamentalny błąd projektowy:{" "}
+          <strong>wszystko było w jednym miejscu, ale nic nie było na widoku</strong>. Historia
+          zmian istniała, ale była ukryta za ikoną zegara — interakcja, której user musiał się
+          domyślić. To klasyczne naruszenie heurystyki Nielsena #6:{" "}
+          <em>Recognition over Recall</em>. System powinien pokazywać opcje, nie wymagać ich
+          pamiętania.
+        </p>
+        <p>
+          <strong>Drugi błąd:</strong> jeden formularz dla dwóch różnych kontekstów
+          biznesowych — zmiana statusu i dodanie punktacji. To operacje o różnej
+          częstotliwości, różnych aktorach (status zmienia handlowiec, scoring często system
+          automatyczny) i różnych skutkach biznesowych. Wrzucenie ich do jednego formularza to
+          brak separacji odpowiedzialności na poziomie UX.
+        </p>
+        <p>
+          <strong>Trzeci, najbardziej bolesny operacyjnie:</strong> brak możliwości korekty
+          historycznych wpisów. W codziennej pracy CRM błędy są normą — importy z innego
+          systemu, ręczne wpisy z datą „wczoraj", korekty po rozmowie z klientem. Brak edycji
+          historii to nie tylko UX-owy brak kontroli, to realne koszty operacyjne: ticket do
+          supportu albo błędne dane na zawsze.
         </p>
       </>
     ),
   },
   {
-    id: "uklad",
-    title: "Układ — split view 5/7",
+    id: "decyzje",
+    title: "2. Decyzje projektowe",
     body: (
       <>
+        <h3>Decyzja 1 — Split-view zamiast pionowego scrollowania</h3>
         <p>
-          Zastosowaliśmy podział 12-kolumnowy: <strong>Stan aktualny (5)</strong> po lewej i{" "}
-          <strong>Historia aktywności (7)</strong> po prawej. Lewa kolumna jest węższa, bo
-          zawiera krótkie karty (status, punktacja, opiekun); prawa — szersza, bo timeline
-          wymaga miejsca na komentarze i metadane.
+          <strong>Co zmieniłem:</strong> zrezygnowałem z jednej pionowej kolumny na rzecz
+          układu dwukolumnowego: lewa kolumna (40%) to „Stan aktualny", prawa (60%) to
+          „Historia aktywności".
         </p>
         <p>
-          Poniżej breakpointa <code>lg</code> (1024px) layout przełącza się w zakładki
-          (Tabs), żeby nie zmuszać użytkownika do przewijania w pionie przez całą stronę.
-        </p>
-      </>
-    ),
-  },
-  {
-    id: "sidebar",
-    title: "Sidebar — nawigacja kontaktu",
-    body: (
-      <>
-        <p>
-          Lewy sidebar zastąpił horyzontalne taby z oryginalnego YouLeada. Powód:{" "}
-          <strong>poziome taby przestają się skalować</strong> przy 8+ pozycjach i wymuszają
-          skrót lub overflow. Sidebar utrzymuje kontekst (avatar + nazwa) cały czas widoczny,
-          a podział na grupy (Profil, Sprzedaż, Aktywność, Komercja, Automatyzacja, Pomoc)
-          tworzy mentalną mapę.
+          <strong>Dlaczego:</strong> użytkownik potrzebuje jednocześnie widzieć{" "}
+          <em>gdzie jest lead teraz</em> i <em>jak tam trafił</em>. Pionowy scroll wymagał
+          przełączania uwagi i pamiętania, co było wyżej. Split-view eliminuje ten koszt
+          poznawczy — obie informacje są zawsze w polu widzenia.
         </p>
         <p>
-          <strong>Stan zwinięty (56px)</strong> pokazuje tylko ikony Lucide z tooltipami
-          Radix (delay 120ms — nie 5 sekund jak natywny <code>title</code>).{" "}
-          <strong>Stan rozwinięty (240px)</strong> pokazuje etykiety i nagłówki grup
-          „sztywno" napisane nad każdym blokiem. Przełącznik <em>PanelLeft</em> w headerze
-          jest zawsze dostępny.
+          <strong>Wzorzec:</strong> Linear (issue panel — properties na prawo, aktywność na
+          lewo), Stripe Dashboard (payment details + event log obok siebie).
         </p>
-      </>
-    ),
-  },
-  {
-    id: "komponenty",
-    title: "Użyte komponenty",
-    body: (
-      <>
+        <p>
+          <strong>Kompromis:</strong> na ekranach &lt; 1024px układ składa się do jednej
+          kolumny z tabami. Stracimy widoczność historii na tabletach bez kliknięcia. Decyzja
+          świadoma — większość CRM jest używana na desktopie przez handlowców przy biurku.
+        </p>
+
+        <h3>Decyzja 2 — Zunifikowana oś czasu zamiast dwóch osobnych tabel</h3>
+        <p>
+          <strong>Co zmieniłem:</strong> zamiast „Historia zmian statusów" i „Historia zmian
+          punktacji" jako oddzielne tabele — jedna chronologiczna oś czasu zawierająca oba
+          typy zdarzeń plus notatki systemowe.
+        </p>
+        <p>
+          <strong>Dlaczego:</strong> handlowiec myśli o leadzie jako o narracji, nie o bazie
+          danych. „Co się ostatnio działo z tym klientem?" — to pytanie chronologiczne, nie
+          kategoryczne. Dodatkowa korzyść: widać korelacje — lead dostał +15 punktów (kliknął
+          mail) tego samego dnia co zmiana statusu na „Kwalifikowany". Filtry [Wszystko][
+          Status][Scoring] pozwalają wrócić do perspektywy kategorycznej, gdy user tego
+          potrzebuje.
+        </p>
+
+        <h3>Decyzja 3 — Inline edit w popoverze, nie modal</h3>
+        <p>
+          Każdy wpis na osi czasu ma affordancję edycji (pojawia się na hover). Kliknięcie
+          otwiera popover zakotwiczony do wiersza — nie pełnoekranowy modal.
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Opcja</th>
+              <th>Problem</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Inline edit (wiersz → formularz)</td>
+              <td>Niszczy rytm osi czasu, user traci kontekst sąsiednich wpisów</td>
+            </tr>
+            <tr>
+              <td>Pełny modal</td>
+              <td>Heavy — wyjście z kontekstu, blokuje widok historii</td>
+            </tr>
+            <tr>
+              <td>Nowa strona</td>
+              <td>Zbyt duży koszt nawigacyjny dla drobnej korekty daty</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          <strong>Co można edytować, a czego nie:</strong>
+        </p>
         <ul>
+          <li>✅ <code>occurredAt</code> — klucz do problemu biznesowego</li>
+          <li>✅ <code>comment</code> / <code>reason</code> — uzupełnienie, korekta notatki</li>
           <li>
-            <strong>shadcn/ui</strong> (Radix pod spodem): <code>Select</code>,{" "}
-            <code>Popover</code>, <code>Calendar</code>, <code>Tabs</code>,{" "}
-            <code>Tooltip</code>, <code>HoverCard</code>, <code>Button</code>. Brak natywnych
-            <code>&lt;select&gt;</code> i <code>&lt;input type="datetime-local"&gt;</code>.
+            ❌ <code>from/to</code> w zmianie statusu — to fakt historyczny. Edytować można
+            „kiedy" i „dlaczego", nie „co".
           </li>
-          <li>
-            <strong>Framer Motion</strong> — <code>layout</code>/<code>LayoutGroup</code> dla
-            FLIP-animacji w timeline, <code>AnimatePresence</code> dla edycji inline.
-          </li>
-          <li>
-            <strong>Zustand + persist</strong> — pojedyncze źródło prawdy (event stream).
-            Status i punktacja są <em>derive'owane</em> z eventów, nie przechowywane osobno.
-          </li>
-          <li>
-            <strong>Lucide React</strong> — ikony 1.75px stroke, neutralny kontur.
-          </li>
-          <li>
-            <strong>Sonner</strong> — toasty z akcją <em>Cofnij</em> (5 sekund).
-          </li>
+          <li>❌ <code>delta</code> w scoringu — wartości są danymi, nie metadanymi</li>
         </ul>
+
+        <h3>Decyzja 4 — Audit trail zamiast cichej edycji</h3>
         <p>
-          Własne prymitywy: <code>DateTimePicker</code> (Popover + Calendar + numeric time),{" "}
-          <code>NumberStepper</code> (jedno pole z inline +/−), <code>AutoTextarea</code>{" "}
-          (auto-grow, brak resize-handle), <code>Sparkline</code>, <code>StatusChip</code>,{" "}
-          <code>TrendPill</code>, <code>ScoreBar</code>.
+          Każda edycja historycznego wpisu zostawia ślad widoczny w UI: chip{" "}
+          <em>edytowano</em> przy wpisie + lista zmian dostępna po kliknięciu. Edytowalność
+          historii to miecz obosieczny — daje kontrolę, ale rodzi ryzyko fałszowania. Audit
+          trail neutralizuje to ryzyko.
+        </p>
+
+        <h3>Decyzja 5 — Sidebar nawigacyjny zamiast poziomych tabów</h3>
+        <p>
+          Poziome taby nie skalują się przy 11 zakładkach: overflow lub bardzo wąskie taby,
+          brak grupowania, brak miejsca na liczniki. Sidebar to przemysłowy standard dla CRM:
+          HubSpot, Salesforce, Pipedrive, Linear.
+        </p>
+
+        <h3>Decyzja 6 — Optimistic UI + toast z undo</h3>
+        <p>
+          Zapis jest natychmiastowy wizualnie (0 ms). Toast z licznikiem 5 sekund pozwala
+          cofnąć akcję. Handlowiec klika „Zapisz" dziesiątki razy dziennie — każde 600 ms
+          czekania to frustracja skumulowana ×50.
         </p>
       </>
     ),
   },
   {
-    id: "tokeny",
-    title: "Design tokens",
+    id: "proces",
+    title: "3. Opis procesu",
     body: (
       <>
+        <h3>Krok 1 — Diagnoza bez projektowania (30 min)</h3>
         <p>
-          Wszystkie kolory są w HSL, w <code>index.css</code>, jako semantyczne zmienne CSS.
-          Komponenty <strong>nigdy</strong> nie używają hex-ów ani klas typu{" "}
-          <code>text-white</code>. Skala:
+          Zanim narysowałem cokolwiek, wypunktowałem co konkretnie nie działa. Nie „wygląda
+          słabo" — tylko testowalne stwierdzenia:
         </p>
         <ul>
-          <li>
-            <code>--bg</code>, <code>--surface</code>, <code>--surface-2/3</code> — tła
-          </li>
-          <li>
-            <code>--ink-1..4</code> — hierarchia tekstu (od najmocniejszego do
-            najsłabszego)
-          </li>
-          <li>
-            <code>--accent-500/600/700</code> — kolor marki (czerwony YouLead)
-          </li>
-          <li>
-            <code>--status-{`{new|qualified|opportunity|won|lost}`}</code> — pary tło + fg
-            dla chipów statusu
-          </li>
-          <li>
-            <code>--success/warn/info/danger</code> — semantyka systemowa
-          </li>
+          <li>„Historia jest ukryta — nie można jej znaleźć bez wiedzy, że zegar to toggle"</li>
+          <li>„Formularz łączy dwie niezależne operacje — jeden submit zapisuje status i scoring"</li>
+          <li>„Nie można zmienić daty — brak kontrolki"</li>
         </ul>
+
+        <h3>Krok 2 — Zdefiniowanie scenariuszy (nie ekranów)</h3>
+        <ol>
+          <li>Handlowiec zmienia status — jakie informacje potrzebuje? W jakiej kolejności klika?</li>
+          <li>Handlowiec dodaje punkty — analogicznie</li>
+          <li>Manager przeglądający historię leada — co chce zobaczyć na pierwszy rzut oka?</li>
+          <li>Import danych z błędną datą — jak user to koryguje?</li>
+        </ol>
+
+        <h3>Krok 3 — Alternatywy odrzucone</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Wariant</th>
+              <th>Opis</th>
+              <th>Dlaczego odrzucony</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>A: Accordion (legacy)</td>
+              <td>Expandable rows jak oryginalnie</td>
+              <td>Nie rozwiązuje widoczności historii</td>
+            </tr>
+            <tr>
+              <td>B: Tabs w karcie</td>
+              <td>Status / Historia jako taby</td>
+              <td>Nadal ukrywa historię</td>
+            </tr>
+            <tr>
+              <td>C: Split-view ✅</td>
+              <td>Dwie kolumny zawsze widoczne</td>
+              <td>Oba konteksty równocześnie</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Krok 4 — Rapid prototyping z AI</h3>
         <p>
-          Promień: <code>--radius: 10px</code>. Cienie: 4-stopniowa skala{" "}
-          <code>shadow-xs..lg</code>. Tryb ciemny przedefiniowuje tylko warstwę
-          surface/ink/border — reszta tokenów się dziedziczy.
+          Zamiast wireframów w Figma, użyłem Lovable do wygenerowania działającego prototypu
+          React na podstawie szczegółowego briefu MD. Iteracja na działającym UI, nie na
+          statycznych mockupach.
+        </p>
+
+        <h3>Krok 5 — Weryfikacja przeciwko problemom</h3>
+        <p>
+          Dla każdego z 4 problemów z briefu: czy rozwiązanie go eliminuje? Gdzie są
+          kompromisy?
         </p>
       </>
     ),
   },
   {
-    id: "dlaczego",
-    title: "Decyzje — dlaczego tak, nie inaczej",
+    id: "narzedzia",
+    title: "4. Narzędzia i workflow",
+    body: (
+      <>
+        <table>
+          <thead>
+            <tr>
+              <th>Narzędzie</th>
+              <th>Zastosowanie</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Claude (Anthropic)</td><td>Analiza problemu, brief UX, design tokens, audyt prototypu</td></tr>
+            <tr><td>Lovable</td><td>Generowanie działającego prototypu React na podstawie briefu MD</td></tr>
+            <tr><td>React 18 + TypeScript</td><td>Komponentowy framework — produkcyjny standard</td></tr>
+            <tr><td>Tailwind CSS</td><td>Utility-first CSS — szybka iteracja</td></tr>
+            <tr><td>shadcn/ui</td><td>Dostępne, nieozdobne prymitywy (Select, Popover, Calendar)</td></tr>
+            <tr><td>Framer Motion</td><td>FLIP layout, przejścia 120–320 ms, prefers-reduced-motion</td></tr>
+            <tr><td>date-fns + locale pl</td><td>Formatowanie dat po polsku</td></tr>
+            <tr><td>zustand</td><td>Globalny state dla optimistic UI i undo</td></tr>
+            <tr><td>lucide-react</td><td>Ikonografia — konsekwentnie 20 px</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Jak AI wpłynęło na proces?</h3>
+        <p><strong>Używałem AI do:</strong></p>
+        <ul>
+          <li>Syntezy problemów z briefu w testowalne wymagania</li>
+          <li>Generowania design tokens (60+ CSS custom properties)</li>
+          <li>Weryfikacji decyzji przeciwko wzorcom (Linear, Stripe, Apple HIG)</li>
+          <li>Generowania danych przykładowych TypeScript (18 eventów)</li>
+          <li>Audytu prototypu przeciwko WCAG 2.2 AA</li>
+        </ul>
+        <p><strong>Czego AI nie zrobiło:</strong></p>
+        <ul>
+          <li>Nie podjęło decyzji architektonicznej (split-view vs tabs) — wymagała kontekstu biznesowego</li>
+          <li>Nie zdefiniowało co jest edytowalne — wymagało rozumienia integralności danych CRM</li>
+          <li>Nie napisało kompromisów — wynikają z doświadczenia</li>
+        </ul>
+        <p className="text-ink-1 font-medium">
+          AI to narzędzie przyspieszające egzekucję, nie zastępujące myślenie produktowe.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "kompromisy",
+    title: "5. Kompromisy i ograniczenia",
     body: (
       <ul>
         <li>
-          <strong>Event-sourced state.</strong> Status to nie pole — to ostatni event typu{" "}
-          <code>status_change</code>. Pozwala to na tryvialne <em>undo</em>, audit trail i
-          edycję historyczną bez desync'u.
+          <strong>Wersjonowanie historii zamiast edycji</strong> — najbezpieczniejszy UX-owo
+          wzorzec to niezmienialność + wpisy korekcyjne (Event Sourcing). Odrzucone:
+          komplikuje UI i nie pasuje do oczekiwania biznesowego.
         </li>
         <li>
-          <strong>Inline edit zamiast modali.</strong> Modal zrywa kontekst. Edycja w karcie
-          (StatusCard, ScoringCard) zachowuje widok obok stanu, do którego użytkownik wraca.
+          <strong>Mobile-first</strong> — desktop-first, bo CRM jest używany przy biurku.
+          Responsywność istnieje (taby &lt; 1024 px), nie była priorytetem.
         </li>
         <li>
-          <strong>Sentence-case zamiast ALL CAPS</strong> w labelach formularzy. Wielkie
-          litery są zarezerwowane dla nagłówków sekcji (eyebrow), żeby utrzymać hierarchię.
+          <strong>RBAC</strong> — w prototypie każdy edytuje wszystko. W produkcji integracja
+          z permission systemem.
         </li>
         <li>
-          <strong>Tabular numerals (<code>tnum</code>)</strong> dla wszystkich liczb (score,
-          delta, daty). Eliminuje skakanie szerokości przy animacji liczników.
-        </li>
-        <li>
-          <strong>Sparkline bez kropki końcowej.</strong> Czerwona kropka dodawała wizualnego
-          szumu i konkurowała z kolorem marki — usunięta na rzecz neutralnego konturu.
-        </li>
-        <li>
-          <strong>Tooltip 120ms.</strong> Natywne <code>title</code> pokazuje się po ~5
-          sekundach (kontrolowane przez OS) — niedopuszczalne dla nawigacji ikon. Radix daje
-          nam pełną kontrolę.
+          <strong>Keyboard shortcuts</strong> — zaplanowane (J/K, E, ⌘Z), w prototypie
+          częściowo.
         </li>
       </ul>
     ),
   },
   {
-    id: "dostepnosc",
-    title: "Dostępność",
+    id: "dalej",
+    title: "6. Co zrobiłbym dalej (w produkcji)",
     body: (
-      <ul>
-        <li>Focus-visible: 2px outline w kolorze akcentu, offset 2px.</li>
+      <ol>
         <li>
-          <code>prefers-reduced-motion</code> — wszystkie animacje skracane do 0.01ms.
+          <strong>Testy z użytkownikami</strong> — 5 sesji z handlowcami, mierzone czasy,
+          błędy, frustracje.
         </li>
         <li>
-          Każdy chip statusu ma <code>aria-label</code>; ScoreBar ma rolę{" "}
-          <code>progressbar</code> z <code>aria-valuenow/min/max</code>.
+          <strong>RBAC na edycję historii</strong> — integracja z permission systemem
+          YouLead.
         </li>
-        <li>Przyciski ikon mają <code>aria-label</code> w języku polskim.</li>
-        <li>Kontrast tekstu spełnia WCAG AA w obu motywach (jasny i ciemny).</li>
-      </ul>
+        <li>
+          <strong>Multiple funnels</strong> — kontakt w 3 lejkach: oś globalna czy
+          per-lejek?
+        </li>
+        <li>
+          <strong>Export historii</strong> — manager chce CSV.
+        </li>
+        <li>
+          <strong>Bulk operations</strong> — zaznacz 5 wpisów → zmień daty masowo
+          (scenariusz importu).
+        </li>
+      </ol>
     ),
   },
 ];
@@ -190,52 +314,53 @@ export function DocsPanel() {
   return (
     <div className="mx-auto max-w-3xl">
       <div className="mb-8">
-        <h1 className="text-[22px] font-semibold tracking-tight text-ink-1">Dokumentacja</h1>
-        <p className="mt-1 text-sm text-ink-3">
-          Decyzje projektowe, użyte komponenty i tokeny — dlaczego ten interfejs wygląda tak,
-          jak wygląda.
+        <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-3">
+          Dokumentacja projektu
+        </div>
+        <h1 className="text-[28px] font-semibold tracking-tight text-ink-1">
+          Redesign zakładki „Lejki"
+        </h1>
+        <p className="mt-2 text-sm text-ink-3">
+          YouLead CRM — Karta klienta · Stack: React 18 · TypeScript · Tailwind · shadcn/ui ·
+          Framer Motion
         </p>
       </div>
 
-      <nav className="mb-8 rounded-lg border border-border bg-surface p-4">
+      <nav className="mb-10 rounded-lg border border-border bg-surface p-4">
         <div className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-ink-3">
           Spis treści
         </div>
         <ol className="grid grid-cols-1 gap-1 text-sm sm:grid-cols-2">
-          {SECTIONS.map((s, i) => (
+          {SECTIONS.map((s) => (
             <li key={s.id}>
-              <a
-                href={`#${s.id}`}
-                className="tnum text-ink-2 hover:text-ink-1 hover:underline"
-              >
-                {String(i + 1).padStart(2, "0")}. {s.title}
+              <a href={`#${s.id}`} className="text-ink-2 hover:text-ink-1 hover:underline">
+                {s.title}
               </a>
             </li>
           ))}
         </ol>
       </nav>
 
-      <div className="space-y-10">
-        {SECTIONS.map((s, i) => (
+      <div className="space-y-8">
+        {SECTIONS.map((s) => (
           <section
             key={s.id}
             id={s.id}
-            className="rounded-lg border border-border bg-surface p-6 shadow-xs scroll-mt-24"
+            className="scroll-mt-24 rounded-lg border border-border bg-surface p-7 shadow-xs"
           >
-            <div className="mb-3 flex items-baseline gap-3">
-              <span className="tnum text-[11px] font-semibold uppercase tracking-wider text-ink-4">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <h2 className="text-[18px] font-semibold tracking-tight text-ink-1">
-                {s.title}
-              </h2>
-            </div>
-            <div className="prose-docs space-y-3 text-[14px] leading-relaxed text-ink-2">
+            <h2 className="mb-5 text-[20px] font-semibold tracking-tight text-ink-1">
+              {s.title}
+            </h2>
+            <div className="docs-prose space-y-4 text-[14px] leading-relaxed text-ink-2">
               {s.body}
             </div>
           </section>
         ))}
       </div>
+
+      <footer className="mt-10 border-t border-border pt-6 text-[12px] text-ink-3">
+        Projekt: Redesign zakładki Lejki — YouLead CRM · Maj 2026
+      </footer>
     </div>
   );
 }
