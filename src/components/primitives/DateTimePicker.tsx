@@ -1,4 +1,5 @@
 import { format, parseISO } from "date-fns";
+import { pl } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -42,7 +43,7 @@ export function DateTimePicker({
             className="h-9 flex-1 justify-start gap-2 px-3 text-left font-normal text-ink-1"
           >
             <CalendarIcon className="h-4 w-4 text-ink-3" />
-            {format(date, "d MMM yyyy")}
+            {format(date, "d MMM yyyy", { locale: pl })}
           </Button>
         </PopoverTrigger>
         <PopoverContent align="start" className="w-auto p-0">
@@ -51,6 +52,7 @@ export function DateTimePicker({
             selected={date}
             onSelect={setDate}
             initialFocus
+            locale={pl}
             className={cn("p-3 pointer-events-auto")}
           />
         </PopoverContent>

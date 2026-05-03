@@ -26,19 +26,12 @@ const SECTION_LABEL: Record<string, string> = {
 export function LejkiPanel() {
   const [dark, setDark] = useState(false);
   const [active, setActive] = useState("lejki");
-  const [collapsed, setCollapsed] = useState(
-    typeof window !== "undefined" ? window.innerWidth <= 1280 : false,
-  );
+  const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
   }, [dark]);
 
-  useEffect(() => {
-    const onResize = () => setCollapsed(window.innerWidth <= 1280);
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, []);
 
   return (
     <div className="flex min-h-screen bg-bg">
