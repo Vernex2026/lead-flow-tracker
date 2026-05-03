@@ -181,9 +181,10 @@ export function TimelineEvent({ event }: { event: TEvent }) {
             <Button
               variant="ghost"
               size="sm"
-              className="h-7 self-start opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100"
+              className="h-7 gap-1.5 self-start text-ink-3 opacity-0 transition-opacity hover:bg-surface-2 hover:text-ink-1 group-hover:opacity-100 focus:opacity-100"
             >
               <Pencil className="h-3.5 w-3.5" />
+              <span className="text-[12px]">Edytuj</span>
             </Button>
           </PopoverTrigger>
           <PopoverContent align="end" className="w-80 space-y-3">

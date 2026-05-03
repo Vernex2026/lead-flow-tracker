@@ -26,9 +26,7 @@ const SECTION_LABEL: Record<string, string> = {
 export function LejkiPanel() {
   const [dark, setDark] = useState(false);
   const [active, setActive] = useState("lejki");
-  const [collapsed, setCollapsed] = useState(
-    typeof window !== "undefined" ? window.innerWidth <= 1280 : false,
-  );
+  const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
