@@ -3,15 +3,16 @@ import type { TimelineEvent, User } from "./types";
 export const currentUser: User = { id: "u_anna", name: "Anna Kowal", email: "anna.kowal@firma.pl" };
 export const userJan: User = { id: "u_jan", name: "Jan Kowalski", email: "jan@firma.pl" };
 
-export const lead = {
-  id: "lead_01",
-  name: "Selenium01",
-  email: "kontakt@selenium01.pl",
-  funnel: { id: "fn_general", name: "Lejek ogólny" },
-  owner: currentUser,
-};
+export interface LeadFixture {
+  id: string;
+  name: string;
+  email: string;
+  funnel: { id: string; name: string };
+  owner: User;
+  events: TimelineEvent[];
+}
 
-export const initialEvents: TimelineEvent[] = [
+const seleniumEvents: TimelineEvent[] = [
   {
     id: "e1",
     type: "status_change",
@@ -135,3 +136,27 @@ export const initialEvents: TimelineEvent[] = [
     edits: [],
   },
 ];
+
+export const leads: LeadFixture[] = [
+  {
+    id: "lead_01",
+    name: "Selenium01",
+    email: "kontakt@selenium01.pl",
+    funnel: { id: "fn_general", name: "Lejek ogólny" },
+    owner: currentUser,
+    events: seleniumEvents,
+  },
+  {
+    id: "lead_02",
+    name: "Nowy kontakt",
+    email: "nowy.kontakt@example.pl",
+    funnel: { id: "fn_general", name: "Lejek ogólny" },
+    owner: currentUser,
+    events: [],
+  },
+];
+
+// Backwards-compat: default lead used by components that don't need switching.
+export const lead = leads[0];
+
+export const initialEvents = seleniumEvents;
