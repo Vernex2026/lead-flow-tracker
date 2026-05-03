@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Moon, Sun, PanelLeft, Menu, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
