@@ -57,7 +57,7 @@ export function ContactSidebar({ collapsed }: { collapsed: boolean }) {
           collapsed && "justify-center px-2",
         )}
       >
-        <Avatar name={lead.name} size={collapsed ? 28 : 36} />
+        <Avatar name={lead.name} size={collapsed ? 24 : 32} />
         {!collapsed && (
           <div className="min-w-0">
             <div className="truncate text-[13px] font-semibold text-ink-1">{lead.name}</div>
