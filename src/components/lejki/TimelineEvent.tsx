@@ -189,11 +189,11 @@ export function TimelineEvent({ event }: { event: TEvent }) {
           <PopoverContent align="end" className="w-80 space-y-3">
             <div className="text-[11px] font-semibold uppercase tracking-wider text-ink-3">Edytuj wpis</div>
             <div>
-              <label className="mb-1 block text-[11px] text-ink-3">Data</label>
+              <label className="mb-1 block text-[12px] font-medium text-ink-2">Data</label>
               <DateTimePicker value={when} onChange={setWhen} />
             </div>
             <div>
-              <label className="mb-1 block text-[11px] text-ink-3">
+              <label className="mb-1 block text-[12px] font-medium text-ink-2">
                 {event.payload.kind === "note" ? "Treść" : "Komentarz"}
               </label>
               <AutoTextarea value={comment} onChange={(e) => setComment(e.target.value)} />
