@@ -131,6 +131,17 @@ export function HistoryFilters({
               {f.label}
             </button>
           ))}
+          {noteCount > 0 && (
+            <button
+              onClick={() => onFilter("note")}
+              className={cn(
+                "rounded-[6px] px-2.5 py-1.5 text-[13px] font-medium transition-colors",
+                filter === "note" ? "bg-surface-2 text-ink-1" : "text-ink-3 hover:text-ink-1",
+              )}
+            >
+              Notatki <span className="tnum text-ink-4">({noteCount})</span>
+            </button>
+          )}
         </div>
 
         <div className="relative ml-1 min-w-[160px] flex-1">
