@@ -4,7 +4,7 @@ import { ArrowDown, ArrowUp, Bell, FileText, Pencil, UserCog } from "lucide-reac
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
-import { Textarea } from "@/components/ui/textarea";
+import { AutoTextarea } from "@/components/primitives/AutoTextarea";
 import { cn } from "@/lib/utils";
 import { fmtTime, fmtDateTime } from "@/lib/format";
 import { STATUS_LABEL, type EditEntry, type TimelineEvent as TEvent } from "@/data/types";
@@ -196,7 +196,7 @@ export function TimelineEvent({ event }: { event: TEvent }) {
               <label className="mb-1 block text-[11px] text-ink-3">
                 {event.payload.kind === "note" ? "Treść" : "Komentarz"}
               </label>
-              <Textarea value={comment} onChange={(e) => setComment(e.target.value)} rows={3} />
+              <AutoTextarea value={comment} onChange={(e) => setComment(e.target.value)} />
             </div>
             <div className="flex justify-end gap-2">
               <Button variant="ghost" size="sm" onClick={() => setOpen(false)}>Anuluj</Button>

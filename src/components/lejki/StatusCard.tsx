@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
+import { AutoTextarea } from "@/components/primitives/AutoTextarea";
 import { StatusChip } from "@/components/primitives/StatusChip";
 import { DateTimePicker } from "@/components/primitives/DateTimePicker";
 import { RelativeTime } from "@/components/primitives/RelativeTime";
@@ -136,7 +136,7 @@ export function StatusCard() {
             </div>
             <div>
               <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-ink-3">Komentarz</label>
-              <Textarea value={comment} onChange={(e) => setComment(e.target.value)} rows={2} placeholder="Opcjonalnie…" />
+              <AutoTextarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Opcjonalnie…" />
             </div>
             <div className="flex justify-end gap-2 pt-1">
               <Button variant="ghost" size="sm" onClick={() => setEditing(false)}>
