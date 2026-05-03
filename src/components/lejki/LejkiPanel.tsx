@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "next-themes";
-import { Moon, Sun, PanelLeft, Menu, ChevronDown } from "lucide-react";
+import { Moon, Sun, PanelLeft, Menu, ChevronDown, Github } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
@@ -161,16 +161,36 @@ export function LejkiPanel() {
                 <span className="text-ink-2">{SECTION_LABEL[active] ?? "Lejki"}</span>
               </div>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label={isDark ? "Przełącz na jasny motyw" : "Przełącz na ciemny motyw"}
-              aria-pressed={isDark}
-              onClick={() => setTheme(isDark ? "light" : "dark")}
-              className="h-8 w-8"
-            >
-              {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </Button>
+            <div className="flex items-center gap-1">
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                className="h-8 gap-1.5 px-2.5 text-ink-2 hover:text-ink-1"
+              >
+                <a
+                  href="https://github.com/Vernex2026/lead-flow-tracker/archive/refs/heads/main.zip"
+                  download="lead-flow-tracker.zip"
+                  aria-label="Pobierz kod źródłowy projektu (ZIP z GitHub)"
+                  title="Pobierz kod źródłowy (.zip)"
+                >
+                  <Github className="h-3.5 w-3.5" aria-hidden />
+                  <span className="hidden text-xs font-medium sm:inline">
+                    Kod źródłowy
+                  </span>
+                </a>
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label={isDark ? "Przełącz na jasny motyw" : "Przełącz na ciemny motyw"}
+                aria-pressed={isDark}
+                onClick={() => setTheme(isDark ? "light" : "dark")}
+                className="h-8 w-8"
+              >
+                {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              </Button>
+            </div>
           </div>
         </header>
 
