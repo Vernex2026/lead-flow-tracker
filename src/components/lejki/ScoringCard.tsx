@@ -33,14 +33,22 @@ function useCountUp(target: number, duration = 400) {
   return v;
 }
 
-export function ScoringCard() {
+export function ScoringCard({
+  isEditing,
+  onEditStart,
+  onClose,
+}: {
+  isEditing: boolean;
+  onEditStart: () => void;
+  onClose: () => void;
+}) {
   const events = useLejkiStore((s) => s.events);
   const addEvent = useLejkiStore((s) => s.addEvent);
   const removeEvent = useLejkiStore((s) => s.removeEvent);
   const { score, delta } = deriveCurrentScore(events);
   const animScore = useCountUp(score);
 
-  const [editing, setEditing] = useState(false);
+  const editing = isEditing;
   const [pts, setPts] = useState(5);
   const [comment, setComment] = useState("");
   const [when, setWhen] = useState(new Date().toISOString());
