@@ -26,7 +26,6 @@ const PRIMARY: { key: FilterKind; label: string }[] = [
   { key: "all", label: "Wszystko" },
   { key: "status", label: "Status" },
   { key: "score", label: "Scoring" },
-  { key: "note", label: "Notatki" },
 ];
 
 const STATUS_ALL: StatusCode[] = ["new", "qualified", "opportunity", "won", "lost"];
@@ -79,6 +78,7 @@ export function HistoryFilters({
   onToggleSort,
   advanced,
   onAdvanced,
+  noteCount = 0,
 }: {
   filter: FilterKind;
   onFilter: (f: FilterKind) => void;
@@ -88,6 +88,7 @@ export function HistoryFilters({
   onToggleSort: () => void;
   advanced: AdvancedFilters;
   onAdvanced: (a: AdvancedFilters) => void;
+  noteCount?: number;
 }) {
   const activeCount = useMemo(() => {
     let c = 0;
