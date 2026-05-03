@@ -7,19 +7,17 @@ export function Sparkline({ values, width = 180, height = 32 }: { values: number
   const pts = values
     .map((v, i) => `${(i * step).toFixed(1)},${(height - ((v - min) / span) * (height - 4) - 2).toFixed(1)}`)
     .join(" ");
-  const last = values[values.length - 1];
-  const lastY = height - ((last - min) / span) * (height - 4) - 2;
   return (
-    <svg width={width} height={height} className="overflow-visible">
+    <svg width={width} height={height} className="overflow-visible" aria-hidden>
       <polyline
         points={pts}
         fill="none"
-        stroke="hsl(var(--ink-2))"
-        strokeWidth="1.5"
+        stroke="hsl(var(--ink-3))"
+        strokeOpacity="0.6"
+        strokeWidth="1.25"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <circle cx={width} cy={lastY} r={2.5} fill="hsl(var(--accent-600))" />
     </svg>
   );
 }

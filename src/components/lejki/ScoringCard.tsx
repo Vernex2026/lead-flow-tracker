@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
-import { Plus, Minus, Check, X } from "lucide-react";
+import { Plus, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { ScoreBar } from "@/components/primitives/ScoreBar";
 import { TrendPill } from "@/components/primitives/TrendPill";
 import { Sparkline } from "@/components/primitives/Sparkline";
 import { DateTimePicker } from "@/components/primitives/DateTimePicker";
+import { NumberStepper } from "@/components/primitives/NumberStepper";
+import { AutoTextarea } from "@/components/primitives/AutoTextarea";
 import { useLejkiStore, deriveCurrentScore } from "@/store/lejkiStore";
 import { currentUser } from "@/data/fixtures";
 
@@ -108,23 +108,19 @@ export function ScoringCard() {
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <div className="mt-5 space-y-3 border-t border-border pt-5">
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => setPts(pts - 1)}>
-                  <Minus className="h-3.5 w-3.5" />
-                </Button>
-                <Input
-                  type="number"
-                  value={pts}
-                  onChange={(e) => setPts(parseInt(e.target.value) || 0)}
-                  className="tnum text-center"
-                />
-                <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => setPts(pts + 1)}>
-                  <Plus className="h-3.5 w-3.5" />
-                </Button>
+            <div className="mt-5 space-y-4 border-t border-border pt-5">
+              <div className="grid grid-cols-[120px_1fr] items-center gap-3">
+                <NumberStepper value={pts} onChange={setPts} />
+                <span className="text-[12px] text-ink-3">
+                  Nowa wartość: <span className="tnum font-medium text-ink-1">{Math.max(0, Math.min(100, score + pts))}</span>
+                </span>
               </div>
               <DateTimePicker value={when} onChange={setWhen} />
-              <Textarea value={comment} onChange={(e) => setComment(e.target.value)} rows={2} placeholder="Komentarz (opcjonalnie)…" />
+              <AutoTextarea
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="Komentarz (opcjonalnie)…"
+              />
               <div className="flex justify-end gap-2">
                 <Button variant="ghost" size="sm" onClick={() => setEditing(false)}>
                   <X className="mr-1 h-3.5 w-3.5" />Anuluj

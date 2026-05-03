@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
+import { AutoTextarea } from "@/components/primitives/AutoTextarea";
 import { StatusChip } from "@/components/primitives/StatusChip";
 import { DateTimePicker } from "@/components/primitives/DateTimePicker";
 import { RelativeTime } from "@/components/primitives/RelativeTime";
@@ -107,7 +107,7 @@ export function StatusCard() {
             className="space-y-3"
           >
             <div>
-              <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-ink-3">
+              <label className="mb-1.5 block text-[12px] font-medium text-ink-2">
                 Nowy status
               </label>
               <Select value={next} onValueChange={(v) => { setNext(v as StatusCode); setReason(""); }}>
@@ -120,7 +120,7 @@ export function StatusCard() {
               </Select>
             </div>
             <div>
-              <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-ink-3">Powód</label>
+              <label className="mb-1.5 block text-[12px] font-medium text-ink-2">Powód</label>
               <Select value={reason} onValueChange={setReason}>
                 <SelectTrigger><SelectValue placeholder="Wybierz powód…" /></SelectTrigger>
                 <SelectContent>
@@ -131,12 +131,12 @@ export function StatusCard() {
               </Select>
             </div>
             <div>
-              <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-ink-3">Data</label>
+              <label className="mb-1.5 block text-[12px] font-medium text-ink-2">Data</label>
               <DateTimePicker value={when} onChange={setWhen} />
             </div>
             <div>
-              <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-ink-3">Komentarz</label>
-              <Textarea value={comment} onChange={(e) => setComment(e.target.value)} rows={2} placeholder="Opcjonalnie…" />
+              <label className="mb-1.5 block text-[12px] font-medium text-ink-2">Komentarz</label>
+              <AutoTextarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Opcjonalnie…" />
             </div>
             <div className="flex justify-end gap-2 pt-1">
               <Button variant="ghost" size="sm" onClick={() => setEditing(false)}>
