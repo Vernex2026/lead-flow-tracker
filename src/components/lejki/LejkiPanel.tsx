@@ -83,7 +83,7 @@ export function LejkiPanel() {
           <>
             <motion.div
               key="backdrop"
-              className="fixed inset-0 z-40 bg-black/30 md:hidden"
+              className="fixed inset-0 z-40 bg-black/60 backdrop-blur-[2px] md:hidden"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
