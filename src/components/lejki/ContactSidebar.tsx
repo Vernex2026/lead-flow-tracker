@@ -116,8 +116,10 @@ export function ContactSidebar({
                     <button
                       onClick={() => onSelect(item.key)}
                       className={cn(
-                        "relative flex w-full items-center gap-2.5 rounded-md py-2 text-[13px] transition-colors",
-                        collapsed ? "justify-center px-0" : "px-2.5",
+                        "relative flex w-full transition-colors",
+                        collapsed
+                          ? "flex-col items-center gap-1 rounded-md px-1 py-2 text-[10px] leading-tight"
+                          : "items-center gap-2.5 rounded-md px-2.5 py-2 text-[13px]",
                         isActive
                           ? "bg-surface-2 font-medium text-ink-1"
                           : "text-ink-3 hover:bg-surface-2 hover:text-ink-1",
@@ -130,7 +132,9 @@ export function ContactSidebar({
                         />
                       )}
                       <Icon className="h-5 w-5 shrink-0" strokeWidth={1.75} />
-                      {!collapsed && <span className="truncate">{item.label}</span>}
+                      <span className={cn("truncate", collapsed ? "max-w-full text-center" : "")}>
+                        {item.label}
+                      </span>
                     </button>
                   );
 
