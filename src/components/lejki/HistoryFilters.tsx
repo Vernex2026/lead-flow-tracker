@@ -31,11 +31,11 @@ const PRIMARY: { key: FilterKind; label: string }[] = [
 
 const STATUS_ALL: StatusCode[] = ["new", "qualified", "opportunity", "won", "lost"];
 const STATUS_TONE: Record<StatusCode, string> = {
-  new: "bg-status-new text-status-new-foreground border-status-new",
-  qualified: "bg-status-qualified text-status-qualified-foreground border-status-qualified",
-  opportunity: "bg-status-opportunity text-status-opportunity-foreground border-status-opportunity",
-  won: "bg-status-won text-status-won-foreground border-status-won",
-  lost: "bg-status-lost text-status-lost-foreground border-status-lost",
+  new: "bg-status-new text-status-new-fg border-status-new",
+  qualified: "bg-status-qualified text-status-qualified-fg border-status-qualified",
+  opportunity: "bg-status-opportunity text-status-opportunity-fg border-status-opportunity",
+  won: "bg-status-won text-status-won-fg border-status-won",
+  lost: "bg-status-lost text-status-lost-fg border-status-lost",
 };
 
 const PERIODS: { key: Period; label: string }[] = [
