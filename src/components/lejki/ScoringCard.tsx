@@ -73,7 +73,7 @@ export function ScoringCard({
       edits: [],
     };
     addEvent(ev);
-    setEditing(false);
+    onClose();
     setPts(5);
     setComment("");
     toast.success(`Punktacja: ${newScore}`, {
@@ -87,7 +87,7 @@ export function ScoringCard({
       <header className="mb-4 flex items-center justify-between">
         <h3 className="text-[12px] font-semibold uppercase tracking-wider text-ink-3">Punktacja</h3>
         {!editing && (
-          <Button variant="ghost" size="sm" className="h-7 gap-1.5 text-ink-2" onClick={() => setEditing(true)}>
+          <Button variant="ghost" size="sm" className="h-7 gap-1.5 text-ink-2" onClick={onEditStart}>
             <Plus className="h-3.5 w-3.5" /> Dodaj punkty
           </Button>
         )}
@@ -130,7 +130,7 @@ export function ScoringCard({
                 placeholder="Komentarz (opcjonalnie)…"
               />
               <div className="flex justify-end gap-2">
-                <Button variant="ghost" size="sm" onClick={() => setEditing(false)}>
+                <Button variant="ghost" size="sm" onClick={onClose}>
                   <X className="mr-1 h-3.5 w-3.5" />Anuluj
                 </Button>
                 <Button size="sm" onClick={save} disabled={pts === 0}>
