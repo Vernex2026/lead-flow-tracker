@@ -1,11 +1,20 @@
 import { format, parseISO } from "date-fns";
 import { pl } from "date-fns/locale";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+
+const HOURS = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, "0"));
+const MINUTES = Array.from({ length: 12 }, (_, i) => (i * 5).toString().padStart(2, "0"));
 
 export function DateTimePicker({
   value,
@@ -17,7 +26,8 @@ export function DateTimePicker({
   className?: string;
 }) {
   const date = parseISO(value);
-  const time = format(date, "HH:mm");
+  const hh = format(date, "HH");
+  const mm = format(date, "mm");
 
   const setDate = (d: Date | undefined) => {
     if (!d) return;
@@ -26,13 +36,23 @@ export function DateTimePicker({
     onChange(merged.toISOString());
   };
 
-  const setTime = (t: string) => {
-    const [h, m] = t.split(":").map(Number);
-    if (Number.isNaN(h) || Number.isNaN(m)) return;
+  const setH = (h: string) => {
     const merged = new Date(date);
-    merged.setHours(h, m, 0, 0);
+    merged.setHours(parseInt(h, 10), date.getMinutes(), 0, 0);
     onChange(merged.toISOString());
   };
+  const setM = (m: string) => {
+    const merged = new Date(date);
+    merged.setHours(date.getHours(), parseInt(m, 10), 0, 0);
+    onChange(merged.toISOString());
+  };
+
+  // Snap displayed minute to closest 5-minute step for the select value.
+  const mmSnapped = MINUTES.includes(mm)
+    ? mm
+    : MINUTES.reduce((acc, cur) =>
+        Math.abs(parseInt(cur) - parseInt(mm)) < Math.abs(parseInt(acc) - parseInt(mm)) ? cur : acc,
+      );
 
   return (
     <div className={cn("flex gap-2", className)}>
@@ -57,12 +77,35 @@ export function DateTimePicker({
           />
         </PopoverContent>
       </Popover>
-      <Input
-        type="time"
-        value={time}
-        onChange={(e) => setTime(e.target.value)}
-        className="tnum h-9 w-[110px]"
-      />
+
+      <div className="flex h-9 items-center gap-1 rounded-md border border-border bg-surface px-2">
+        <Clock className="h-3.5 w-3.5 text-ink-3" />
+        <Select value={hh} onValueChange={setH}>
+          <SelectTrigger className="tnum h-7 w-[52px] border-0 bg-transparent px-1 text-[13px] focus:ring-0 focus:ring-offset-0">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent className="max-h-[240px] min-w-0">
+            {HOURS.map((h) => (
+              <SelectItem key={h} value={h} className="tnum">
+                {h}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <span className="text-ink-3">:</span>
+        <Select value={mmSnapped} onValueChange={setM}>
+          <SelectTrigger className="tnum h-7 w-[52px] border-0 bg-transparent px-1 text-[13px] focus:ring-0 focus:ring-offset-0">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent className="max-h-[240px] min-w-0">
+            {MINUTES.map((m) => (
+              <SelectItem key={m} value={m} className="tnum">
+                {m}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
     </div>
   );
 }
