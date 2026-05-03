@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
-import { useLejkiStore } from "@/store/lejkiStore";
+import { useCurrentEvents } from "@/store/lejkiStore";
 import { dayKey, dayLabel } from "@/lib/format";
 import { TimelineEvent } from "./TimelineEvent";
 import {
@@ -10,13 +10,26 @@ import {
   type AdvancedFilters,
 } from "./HistoryFilters";
 import { Inbox } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
-export function HistoryColumn() {
-  const events = useLejkiStore((s) => s.events);
+export function HistoryColumn({
+  onSetStatus,
+  onAddScore,
+}: {
+  onSetStatus?: () => void;
+  onAddScore?: () => void;
+}) {
+  const events = useCurrentEvents();
+  const hasHistory = events.length > 0;
   const [filter, setFilter] = useState<FilterKind>("all");
   const [query, setQuery] = useState("");
   const [sortDesc, setSortDesc] = useState(true);
   const [advanced, setAdvanced] = useState<AdvancedFilters>(EMPTY_FILTERS);
+
+  const noteCount = useMemo(
+    () => events.filter((e) => e.payload.kind === "note").length,
+    [events],
+  );
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -83,21 +96,26 @@ export function HistoryColumn() {
         Historia aktywności
       </h2>
       <div className="flex min-h-0 flex-1 flex-col rounded-lg border border-border bg-surface shadow-xs">
-        <div className="shrink-0 border-b border-border p-4">
-          <HistoryFilters
-            filter={filter}
-            onFilter={setFilter}
-            query={query}
-            onQuery={setQuery}
-            sortDesc={sortDesc}
-            onToggleSort={() => setSortDesc((s) => !s)}
-            advanced={advanced}
-            onAdvanced={setAdvanced}
-          />
-        </div>
+        {hasHistory && (
+          <div className="shrink-0 border-b border-border p-4">
+            <HistoryFilters
+              filter={filter}
+              onFilter={setFilter}
+              query={query}
+              onQuery={setQuery}
+              sortDesc={sortDesc}
+              onToggleSort={() => setSortDesc((s) => !s)}
+              advanced={advanced}
+              onAdvanced={setAdvanced}
+              noteCount={noteCount}
+            />
+          </div>
+        )}
 
         <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4 [scrollbar-width:thin]">
-          {filtered.length === 0 ? (
+          {!hasHistory ? (
+            <EmptyHistory onSetStatus={onSetStatus} onAddScore={onAddScore} />
+          ) : filtered.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
               <Inbox className="h-8 w-8 text-ink-4" />
               <div className="text-sm font-medium text-ink-2">Brak wyników</div>
@@ -140,6 +158,44 @@ export function HistoryColumn() {
             </LayoutGroup>
           )}
         </div>
+      </div>
+    </div>
+  );
+}
+
+function EmptyHistory({
+  onSetStatus,
+  onAddScore,
+}: {
+  onSetStatus?: () => void;
+  onAddScore?: () => void;
+}) {
+  return (
+    <div className="mx-auto flex max-w-md flex-col items-center justify-center gap-4 py-12 text-center">
+      <svg
+        width="180"
+        height="80"
+        viewBox="0 0 180 80"
+        fill="none"
+        aria-hidden
+        className="text-ink-4"
+      >
+        <line x1="20" y1="40" x2="160" y2="40" stroke="currentColor" strokeWidth="1" strokeDasharray="3 4" />
+        <circle cx="40" cy="40" r="4" stroke="currentColor" strokeWidth="1" fill="hsl(var(--surface))" />
+        <circle cx="90" cy="40" r="4" stroke="currentColor" strokeWidth="1" fill="hsl(var(--surface))" />
+        <circle cx="140" cy="40" r="4" stroke="currentColor" strokeWidth="1" fill="hsl(var(--surface))" />
+      </svg>
+      <p className="text-[14px] text-ink-2">Ten lead nie ma jeszcze historii aktywności.</p>
+      <p className="max-w-[280px] text-[13px] text-ink-3">
+        Zacznij od ustawienia statusu lub dodania punktacji, aby śledzić postęp tego kontaktu.
+      </p>
+      <div className="mt-1 flex gap-2">
+        <Button variant="outline" size="sm" onClick={onSetStatus}>
+          + Ustaw status
+        </Button>
+        <Button variant="outline" size="sm" onClick={onAddScore}>
+          + Dodaj punkty
+        </Button>
       </div>
     </div>
   );
