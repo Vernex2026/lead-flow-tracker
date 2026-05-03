@@ -62,7 +62,7 @@ export function StatusCard({
       edits: [],
     };
     addEvent(ev);
-    setEditing(false);
+    onClose();
     toast.success(`Status: ${STATUS_LABEL[next]}`, {
       action: { label: "Cofnij", onClick: () => removeEvent(id) },
       duration: 5000,
@@ -147,7 +147,7 @@ export function StatusCard({
               <AutoTextarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Opcjonalnie…" />
             </div>
             <div className="flex justify-end gap-2 pt-1">
-              <Button variant="ghost" size="sm" onClick={() => setEditing(false)}>
+              <Button variant="ghost" size="sm" onClick={onClose}>
                 <X className="mr-1 h-3.5 w-3.5" />Anuluj
               </Button>
               <Button size="sm" disabled={!canSave} onClick={save}>
