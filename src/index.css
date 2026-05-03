@@ -2,104 +2,115 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
-
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --bg: 210 20% 99%;
+    --surface: 0 0% 100%;
+    --surface-2: 220 14% 96%;
+    --surface-3: 220 13% 91%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --ink-1: 222 47% 11%;
+    --ink-2: 215 25% 27%;
+    --ink-3: 215 16% 47%;
+    --ink-4: 215 14% 65%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --border: 220 13% 91%;
+    --border-strong: 220 9% 80%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --accent-50: 354 100% 97%;
+    --accent-100: 353 96% 91%;
+    --accent-500: 354 70% 54%;
+    --accent-600: 356 70% 47%;
+    --accent-700: 357 65% 39%;
+    --accent-fg: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --success-500: 152 60% 38%;
+    --success-50: 152 76% 96%;
+    --warn-500: 35 92% 50%;
+    --warn-50: 48 96% 95%;
+    --danger-500: 354 70% 54%;
+    --info-500: 217 91% 60%;
+    --info-50: 214 95% 96%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --status-new: 220 14% 91%;
+    --status-new-fg: 220 9% 30%;
+    --status-qualified: 214 95% 93%;
+    --status-qualified-fg: 217 91% 35%;
+    --status-opportunity: 48 96% 89%;
+    --status-opportunity-fg: 28 80% 35%;
+    --status-won: 152 76% 91%;
+    --status-won-fg: 152 60% 28%;
+    --status-lost: 0 90% 94%;
+    --status-lost-fg: 354 70% 38%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --radius: 10px;
+    --radius-lg: 14px;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --shadow-xs: 0 1px 2px 0 rgb(15 23 42 / 0.04);
+    --shadow-sm: 0 1px 3px 0 rgb(15 23 42 / 0.06), 0 1px 2px -1px rgb(15 23 42 / 0.06);
+    --shadow: 0 4px 12px -2px rgb(15 23 42 / 0.08), 0 2px 4px -2px rgb(15 23 42 / 0.05);
+    --shadow-lg: 0 12px 32px -8px rgb(15 23 42 / 0.10), 0 4px 8px -4px rgb(15 23 42 / 0.06);
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
-    --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* shadcn shims mapped to our tokens */
+    --background: var(--bg);
+    --foreground: var(--ink-1);
+    --card: var(--surface);
+    --card-foreground: var(--ink-1);
+    --popover: var(--surface);
+    --popover-foreground: var(--ink-1);
+    --primary: var(--ink-1);
+    --primary-foreground: 0 0% 100%;
+    --secondary: var(--surface-2);
+    --secondary-foreground: var(--ink-1);
+    --muted: var(--surface-2);
+    --muted-foreground: var(--ink-3);
+    --accent: var(--surface-2);
+    --accent-foreground: var(--ink-1);
+    --destructive: var(--danger-500);
+    --destructive-foreground: 0 0% 100%;
+    --input: var(--border);
+    --ring: var(--accent-600);
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --bg: 222 47% 7%;
+    --surface: 222 40% 10%;
+    --surface-2: 217 33% 14%;
+    --surface-3: 217 28% 19%;
+    --ink-1: 210 40% 98%;
+    --ink-2: 215 20% 80%;
+    --ink-3: 215 16% 65%;
+    --ink-4: 215 14% 50%;
+    --border: 217 28% 19%;
+    --border-strong: 217 24% 28%;
   }
-}
 
-@layer base {
   * {
-    @apply border-border;
+    border-color: hsl(var(--border));
   }
 
   body {
-    @apply bg-background text-foreground;
+    background: hsl(var(--bg));
+    color: hsl(var(--ink-1));
+    font-family: "Inter", "SF Pro Text", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .tnum {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+
+  *:focus-visible {
+    outline: 2px solid hsl(var(--accent-600));
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
   }
 }
