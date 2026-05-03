@@ -55,15 +55,15 @@ export function DateTimePicker({
       );
 
   return (
-    <div className={cn("flex gap-2", className)}>
+    <div className={cn("flex flex-wrap gap-2", className)}>
       <Popover>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
-            className="h-9 flex-1 justify-start gap-2 px-3 text-left font-normal text-ink-1"
+            className="h-9 min-w-[140px] flex-1 justify-start gap-2 px-3 text-left text-[13px] font-normal text-ink-1"
           >
-            <CalendarIcon className="h-4 w-4 text-ink-3" />
-            {format(date, "d MMM yyyy", { locale: pl })}
+            <CalendarIcon className="h-3.5 w-3.5 shrink-0 text-ink-3" />
+            <span className="truncate">{format(date, "d MMM yyyy", { locale: pl })}</span>
           </Button>
         </PopoverTrigger>
         <PopoverContent align="start" className="w-auto p-0">
@@ -78,10 +78,13 @@ export function DateTimePicker({
         </PopoverContent>
       </Popover>
 
-      <div className="flex h-9 items-center gap-1 rounded-md border border-border bg-surface px-2">
-        <Clock className="h-3.5 w-3.5 text-ink-3" />
+      <div className="flex h-9 shrink-0 items-center gap-0.5 rounded-md border border-border bg-surface px-2">
+        <Clock className="h-3.5 w-3.5 shrink-0 text-ink-3" aria-hidden />
         <Select value={hh} onValueChange={setH}>
-          <SelectTrigger className="tnum h-7 w-[52px] border-0 bg-transparent px-1 text-[13px] focus:ring-0 focus:ring-offset-0">
+          <SelectTrigger
+            aria-label="Godzina"
+            className="tnum h-7 w-[44px] border-0 bg-transparent px-1 text-[13px] focus:ring-0 focus:ring-offset-0"
+          >
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="max-h-[240px] min-w-0">
@@ -92,9 +95,12 @@ export function DateTimePicker({
             ))}
           </SelectContent>
         </Select>
-        <span className="text-ink-3">:</span>
+        <span className="text-ink-3" aria-hidden>:</span>
         <Select value={mmSnapped} onValueChange={setM}>
-          <SelectTrigger className="tnum h-7 w-[52px] border-0 bg-transparent px-1 text-[13px] focus:ring-0 focus:ring-offset-0">
+          <SelectTrigger
+            aria-label="Minuty"
+            className="tnum h-7 w-[44px] border-0 bg-transparent px-1 text-[13px] focus:ring-0 focus:ring-offset-0"
+          >
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="max-h-[240px] min-w-0">

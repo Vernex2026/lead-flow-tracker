@@ -82,28 +82,40 @@ export function ScoringCard({
     });
   };
 
+  const newValue = Math.max(0, Math.min(100, score + pts));
+
   return (
-    <section className="rounded-lg border border-border bg-surface p-6 shadow-xs transition-all hover:-translate-y-px hover:shadow-sm">
-      <header className="mb-4 flex items-center justify-between">
-        <h3 className="text-[12px] font-semibold uppercase tracking-wider text-ink-3">Punktacja</h3>
+    <section className="rounded-lg border border-border bg-surface p-5 shadow-xs">
+      <header className="mb-3 flex items-center justify-between gap-2">
+        <h3 className="text-[12px] font-semibold uppercase tracking-wider text-ink-3">
+          Punktacja
+        </h3>
         {!editing && (
-          <Button variant="ghost" size="sm" className="h-7 gap-1.5 text-ink-2" onClick={onEditStart}>
-            <Plus className="h-3.5 w-3.5" /> Dodaj punkty
+          <Button
+            variant="ghost"
+            size="sm"
+            className="-mr-1.5 h-7 gap-1 px-2 text-ink-2"
+            onClick={onEditStart}
+          >
+            <Plus className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Dodaj punkty</span>
+            <span className="sm:hidden">Dodaj</span>
           </Button>
         )}
       </header>
 
-      <div className="mb-3 flex items-end justify-between gap-3">
-        <div className="flex items-baseline gap-1.5">
-          <span className="tnum text-[28px] font-semibold leading-none text-ink-1">{animScore}</span>
-          <span className="tnum text-sm text-ink-3">/ 100</span>
-        </div>
-        <TrendPill delta={delta} />
+      <div className="flex min-w-0 items-baseline gap-1.5">
+        <span className="tnum text-[28px] font-semibold leading-none text-ink-1">
+          {animScore}
+        </span>
+        <span className="tnum text-sm text-ink-3">/ 100</span>
+        <TrendPill delta={delta} suffix="vs. 7 dni" />
       </div>
+
       <ScoreBar value={animScore} />
 
-      <div className="mt-5 flex items-center justify-between">
-        <span className="text-[11px] uppercase tracking-wider text-ink-3">Trend (historia)</span>
+      <div className="mt-4 flex items-center justify-between gap-2">
+        <span className="text-[11px] uppercase tracking-wider text-ink-3">Trend</span>
         <Sparkline values={sparkValues.length ? sparkValues : [0, 0]} />
       </div>
 
@@ -116,20 +128,37 @@ export function ScoringCard({
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <div className="mt-5 space-y-4 border-t border-border pt-5">
-              <div className="grid grid-cols-[120px_1fr] items-center gap-3">
-                <NumberStepper value={pts} onChange={setPts} />
-                <span className="text-[12px] text-ink-3">
-                  Nowa wartość: <span className="tnum font-medium text-ink-1">{Math.max(0, Math.min(100, score + pts))}</span>
-                </span>
+            <div className="mt-4 space-y-3 border-t border-border pt-4">
+              <div>
+                <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-ink-3">
+                  Punkty do dodania
+                </label>
+                <div className="flex flex-wrap items-center gap-2">
+                  <NumberStepper value={pts} onChange={setPts} />
+                  <span className="text-[12px] text-ink-3">
+                    →{" "}
+                    <span className="tnum font-medium text-ink-1">{newValue}</span>
+                    <span className="text-ink-3"> / 100</span>
+                  </span>
+                </div>
               </div>
-              <DateTimePicker value={when} onChange={setWhen} />
-              <AutoTextarea
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                placeholder="Komentarz (opcjonalnie)…"
-              />
-              <div className="flex justify-end gap-2">
+              <div>
+                <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-ink-3">
+                  Data
+                </label>
+                <DateTimePicker value={when} onChange={setWhen} />
+              </div>
+              <div>
+                <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-ink-3">
+                  Komentarz
+                </label>
+                <AutoTextarea
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  placeholder="Opcjonalnie…"
+                />
+              </div>
+              <div className="flex justify-end gap-2 pt-1">
                 <Button variant="ghost" size="sm" onClick={onClose}>
                   <X className="mr-1 h-3.5 w-3.5" />Anuluj
                 </Button>

@@ -70,11 +70,18 @@ export function StatusCard({
   };
 
   return (
-    <section className="rounded-lg border border-border bg-surface p-6 shadow-xs transition-all hover:-translate-y-px hover:shadow-sm">
-      <header className="mb-4 flex items-center justify-between">
-        <h3 className="text-[12px] font-semibold uppercase tracking-wider text-ink-3">Status</h3>
+    <section className="rounded-lg border border-border bg-surface p-5 shadow-xs">
+      <header className="mb-3 flex items-center justify-between gap-2">
+        <h3 className="text-[12px] font-semibold uppercase tracking-wider text-ink-3">
+          Status
+        </h3>
         {!editing && (
-          <Button variant="ghost" size="sm" className="h-7 gap-1.5 text-ink-2" onClick={open}>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="-mr-1.5 h-7 gap-1 px-2 text-ink-2"
+            onClick={open}
+          >
             <Pencil className="h-3.5 w-3.5" /> Edytuj
           </Button>
         )}
@@ -82,26 +89,35 @@ export function StatusCard({
 
       <AnimatePresence mode="wait" initial={false}>
         {!editing ? (
-          <motion.div key="view" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+          <motion.div
+            key="view"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
             <StatusChip code={cur.code} size="lg" />
-            <dl className="mt-5 grid grid-cols-[88px_1fr] gap-y-2.5 text-sm">
+            <dl className="mt-4 space-y-2 text-[13px]">
               {cur.reason && (
-                <>
-                  <dt className="text-ink-3">Powód</dt>
-                  <dd className="text-ink-1">{cur.reason}</dd>
-                </>
+                <div className="flex flex-wrap items-baseline gap-x-2">
+                  <dt className="shrink-0 text-ink-3">Powód</dt>
+                  <dd className="min-w-0 flex-1 text-ink-1">{cur.reason}</dd>
+                </div>
               )}
-              <dt className="text-ink-3">Etap</dt>
-              <dd className="tnum text-ink-1">
-                {stage} z {STATUS_ORDER.length}
-              </dd>
+              <div className="flex flex-wrap items-baseline gap-x-2">
+                <dt className="shrink-0 text-ink-3">Etap</dt>
+                <dd className="tnum text-ink-1">
+                  {stage} <span className="text-ink-3">z {STATUS_ORDER.length}</span>
+                </dd>
+              </div>
               {cur.at && (
-                <>
-                  <dt className="text-ink-3">Zmieniono</dt>
-                  <dd className="text-ink-1">
-                    <RelativeTime iso={cur.at} /> · <span className="text-ink-3">{cur.by}</span>
+                <div className="flex flex-wrap items-baseline gap-x-2">
+                  <dt className="shrink-0 text-ink-3">Zmieniono</dt>
+                  <dd className="min-w-0 flex-1 text-ink-1">
+                    <RelativeTime iso={cur.at} />{" "}
+                    <span className="text-ink-3">· {cur.by}</span>
                   </dd>
-                </>
+                </div>
               )}
             </dl>
           </motion.div>
@@ -115,10 +131,16 @@ export function StatusCard({
             className="space-y-3"
           >
             <div>
-              <label className="mb-1.5 block text-[12px] font-medium text-ink-2">
+              <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-ink-3">
                 Nowy status
               </label>
-              <Select value={next} onValueChange={(v) => { setNext(v as StatusCode); setReason(""); }}>
+              <Select
+                value={next}
+                onValueChange={(v) => {
+                  setNext(v as StatusCode);
+                  setReason("");
+                }}
+              >
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {STATUS_ORDER.map((s) => (
@@ -128,7 +150,9 @@ export function StatusCard({
               </Select>
             </div>
             <div>
-              <label className="mb-1.5 block text-[12px] font-medium text-ink-2">Powód</label>
+              <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-ink-3">
+                Powód
+              </label>
               <Select value={reason} onValueChange={setReason}>
                 <SelectTrigger><SelectValue placeholder="Wybierz powód…" /></SelectTrigger>
                 <SelectContent>
@@ -139,12 +163,20 @@ export function StatusCard({
               </Select>
             </div>
             <div>
-              <label className="mb-1.5 block text-[12px] font-medium text-ink-2">Data</label>
+              <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-ink-3">
+                Data
+              </label>
               <DateTimePicker value={when} onChange={setWhen} />
             </div>
             <div>
-              <label className="mb-1.5 block text-[12px] font-medium text-ink-2">Komentarz</label>
-              <AutoTextarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Opcjonalnie…" />
+              <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-ink-3">
+                Komentarz
+              </label>
+              <AutoTextarea
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="Opcjonalnie…"
+              />
             </div>
             <div className="flex justify-end gap-2 pt-1">
               <Button variant="ghost" size="sm" onClick={onClose}>

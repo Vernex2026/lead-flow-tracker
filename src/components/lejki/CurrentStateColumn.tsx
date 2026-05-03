@@ -12,7 +12,7 @@ export function CurrentStateColumn({
   setEditingCard: (c: EditingCard) => void;
 }) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <h2 className="px-1 text-[12px] font-semibold uppercase tracking-wider text-ink-3">
         Stan aktualny
       </h2>

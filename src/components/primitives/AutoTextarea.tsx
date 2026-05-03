@@ -6,7 +6,7 @@ export interface AutoTextareaProps extends React.TextareaHTMLAttributes<HTMLText
 }
 
 export const AutoTextarea = React.forwardRef<HTMLTextAreaElement, AutoTextareaProps>(
-  ({ className, minRows = 3, onInput, value, ...props }, ref) => {
+  ({ className, minRows = 2, onInput, value, ...props }, ref) => {
     const innerRef = React.useRef<HTMLTextAreaElement | null>(null);
 
     React.useImperativeHandle(ref, () => innerRef.current as HTMLTextAreaElement);
