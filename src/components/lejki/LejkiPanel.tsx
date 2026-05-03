@@ -5,10 +5,27 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { CurrentStateColumn } from "@/components/lejki/CurrentStateColumn";
 import { HistoryColumn } from "@/components/lejki/HistoryColumn";
 import { ContactSidebar } from "@/components/lejki/ContactSidebar";
+import { DocsPanel } from "@/components/lejki/DocsPanel";
 import { lead } from "@/data/fixtures";
+
+const SECTION_LABEL: Record<string, string> = {
+  data: "Dane klienta",
+  consents: "Zgody",
+  tags: "Tagi",
+  lejki: "Lejki",
+  messages: "Wiadomości",
+  sessions: "Sesje WWW",
+  forms: "Formularze",
+  products: "Produkty",
+  purchases: "Zakupy",
+  events: "Zdarzenia własne",
+  scenarios: "Scenariusze",
+  docs: "Dokumentacja",
+};
 
 export function LejkiPanel() {
   const [dark, setDark] = useState(false);
+  const [active, setActive] = useState("lejki");
   const [collapsed, setCollapsed] = useState(
     typeof window !== "undefined" ? window.innerWidth <= 1280 : false,
   );
