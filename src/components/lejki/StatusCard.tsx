@@ -20,12 +20,20 @@ import { STATUS_LABEL, STATUS_REASONS, type StatusCode } from "@/data/types";
 
 const STATUS_ORDER: StatusCode[] = ["new", "qualified", "opportunity", "won", "lost"];
 
-export function StatusCard() {
+export function StatusCard({
+  isEditing,
+  onEditStart,
+  onClose,
+}: {
+  isEditing: boolean;
+  onEditStart: () => void;
+  onClose: () => void;
+}) {
   const events = useLejkiStore((s) => s.events);
   const addEvent = useLejkiStore((s) => s.addEvent);
   const removeEvent = useLejkiStore((s) => s.removeEvent);
   const cur = deriveCurrentStatus(events);
-  const [editing, setEditing] = useState(false);
+  const editing = isEditing;
   const [next, setNext] = useState<StatusCode>(cur.code);
   const [reason, setReason] = useState<string>("");
   const [comment, setComment] = useState("");
@@ -36,7 +44,7 @@ export function StatusCard() {
     setReason("");
     setComment("");
     setWhen(new Date().toISOString());
-    setEditing(true);
+    onEditStart();
   };
 
   const canSave = next !== cur.code && reason.length > 0;
