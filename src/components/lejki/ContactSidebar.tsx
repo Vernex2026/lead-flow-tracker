@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/primitives/Avatar";
-import { lead } from "@/data/fixtures";
+import { useLejkiStore } from "@/store/lejkiStore";
 import {
   Tooltip,
   TooltipContent,
@@ -71,35 +71,29 @@ export function ContactSidebar({
   collapsed,
   active,
   onSelect,
+  onNavigate,
 }: {
   collapsed: boolean;
   active: string;
   onSelect: (key: string) => void;
+  onNavigate?: () => void;
 }) {
+  const owner = useLejkiStore((s) => s.owner);
+
+  const handleSelect = (k: string) => {
+    onSelect(k);
+    onNavigate?.();
+  };
+
   return (
     <TooltipProvider delayDuration={120} skipDelayDuration={300}>
       <aside
         className={cn(
-          "sticky top-0 z-20 h-screen shrink-0 border-r border-border bg-surface transition-[width] duration-200",
-          collapsed ? "w-[76px]" : "w-[240px]",
+          "flex h-full shrink-0 flex-col border-r border-border bg-surface transition-[width] duration-200",
+          collapsed ? "w-[52px]" : "w-[240px]",
         )}
       >
-        <div
-          className={cn(
-            "flex items-center gap-3 border-b border-border px-3 py-4",
-            collapsed && "justify-center px-2",
-          )}
-        >
-          <Avatar name={lead.name} size={collapsed ? 24 : 32} />
-          {!collapsed && (
-            <div className="min-w-0">
-              <div className="truncate text-[13px] font-semibold text-ink-1">{lead.name}</div>
-              <div className="truncate text-[11px] text-ink-3">{lead.email}</div>
-            </div>
-          )}
-        </div>
-
-        <nav className="overflow-y-auto px-2 py-3" style={{ maxHeight: "calc(100vh - 73px)" }}>
+        <nav className="flex-1 overflow-y-auto px-1.5 py-3">
           {GROUPS.map((group, gi) => (
             <div key={gi} className={gi > 0 ? "mt-3" : ""}>
               {!collapsed && group.title && (
@@ -107,19 +101,20 @@ export function ContactSidebar({
                   {group.title}
                 </div>
               )}
-              {collapsed && gi > 0 && <div className="mx-2 mb-2 h-px bg-border" />}
+              {collapsed && gi > 0 && <div className="mx-1.5 mb-2 h-px bg-border" />}
               <ul className="space-y-0.5">
                 {group.items.map((item) => {
                   const isActive = item.key === active;
                   const Icon = item.icon;
                   const button = (
                     <button
-                      onClick={() => onSelect(item.key)}
+                      aria-label={item.label}
+                      onClick={() => handleSelect(item.key)}
                       className={cn(
-                        "relative flex w-full transition-colors",
+                        "relative flex w-full items-center transition-[opacity,background-color,color]",
                         collapsed
-                          ? "flex-col items-center gap-1 rounded-md px-1 py-2 text-[10px] leading-tight"
-                          : "items-center gap-2.5 rounded-md px-2.5 py-2 text-[13px]",
+                          ? "justify-center rounded-md px-0 py-2"
+                          : "gap-2.5 rounded-md px-2.5 py-2 text-[13px]",
                         isActive
                           ? "bg-surface-2 font-medium text-ink-1"
                           : "text-ink-3 hover:bg-surface-2 hover:text-ink-1",
@@ -132,9 +127,11 @@ export function ContactSidebar({
                         />
                       )}
                       <Icon className="h-5 w-5 shrink-0" strokeWidth={1.75} />
-                      <span className={cn("truncate", collapsed ? "max-w-full text-center" : "")}>
-                        {item.label}
-                      </span>
+                      {!collapsed && (
+                        <span className="truncate transition-opacity duration-75">
+                          {item.label}
+                        </span>
+                      )}
                     </button>
                   );
 
@@ -157,6 +154,41 @@ export function ContactSidebar({
             </div>
           ))}
         </nav>
+
+        {/* User avatar pinned bottom-left (Slack/Linear/Notion pattern) */}
+        <div
+          className={cn(
+            "sticky bottom-0 border-t border-border bg-surface",
+            collapsed ? "flex justify-center px-0 py-3" : "flex items-center gap-2.5 px-3 py-3",
+          )}
+        >
+          {collapsed ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  aria-label={owner.name}
+                  className="rounded-full outline-none ring-offset-surface focus-visible:ring-2 focus-visible:ring-ink-2 focus-visible:ring-offset-2"
+                >
+                  <Avatar name={owner.name} size={32} />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="right" sideOffset={8}>
+                <div className="text-[12px] font-medium">{owner.name}</div>
+                {owner.email && <div className="text-[11px] text-ink-3">{owner.email}</div>}
+              </TooltipContent>
+            </Tooltip>
+          ) : (
+            <>
+              <Avatar name={owner.name} size={32} />
+              <div className="min-w-0 flex-1">
+                <div className="truncate text-[13px] font-medium text-ink-1">{owner.name}</div>
+                {owner.email && (
+                  <div className="truncate text-[11px] text-ink-3">{owner.email}</div>
+                )}
+              </div>
+            </>
+          )}
+        </div>
       </aside>
     </TooltipProvider>
   );
