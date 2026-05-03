@@ -20,12 +20,20 @@ import { STATUS_LABEL, STATUS_REASONS, type StatusCode } from "@/data/types";
 
 const STATUS_ORDER: StatusCode[] = ["new", "qualified", "opportunity", "won", "lost"];
 
-export function StatusCard() {
+export function StatusCard({
+  isEditing,
+  onEditStart,
+  onClose,
+}: {
+  isEditing: boolean;
+  onEditStart: () => void;
+  onClose: () => void;
+}) {
   const events = useLejkiStore((s) => s.events);
   const addEvent = useLejkiStore((s) => s.addEvent);
   const removeEvent = useLejkiStore((s) => s.removeEvent);
   const cur = deriveCurrentStatus(events);
-  const [editing, setEditing] = useState(false);
+  const editing = isEditing;
   const [next, setNext] = useState<StatusCode>(cur.code);
   const [reason, setReason] = useState<string>("");
   const [comment, setComment] = useState("");
@@ -36,7 +44,7 @@ export function StatusCard() {
     setReason("");
     setComment("");
     setWhen(new Date().toISOString());
-    setEditing(true);
+    onEditStart();
   };
 
   const canSave = next !== cur.code && reason.length > 0;
@@ -54,7 +62,7 @@ export function StatusCard() {
       edits: [],
     };
     addEvent(ev);
-    setEditing(false);
+    onClose();
     toast.success(`Status: ${STATUS_LABEL[next]}`, {
       action: { label: "Cofnij", onClick: () => removeEvent(id) },
       duration: 5000,
@@ -139,7 +147,7 @@ export function StatusCard() {
               <AutoTextarea value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Opcjonalnie…" />
             </div>
             <div className="flex justify-end gap-2 pt-1">
-              <Button variant="ghost" size="sm" onClick={() => setEditing(false)}>
+              <Button variant="ghost" size="sm" onClick={onClose}>
                 <X className="mr-1 h-3.5 w-3.5" />Anuluj
               </Button>
               <Button size="sm" disabled={!canSave} onClick={save}>
