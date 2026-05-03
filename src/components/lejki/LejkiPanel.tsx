@@ -5,10 +5,27 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { CurrentStateColumn } from "@/components/lejki/CurrentStateColumn";
 import { HistoryColumn } from "@/components/lejki/HistoryColumn";
 import { ContactSidebar } from "@/components/lejki/ContactSidebar";
+import { DocsPanel } from "@/components/lejki/DocsPanel";
 import { lead } from "@/data/fixtures";
+
+const SECTION_LABEL: Record<string, string> = {
+  data: "Dane klienta",
+  consents: "Zgody",
+  tags: "Tagi",
+  lejki: "Lejki",
+  messages: "Wiadomości",
+  sessions: "Sesje WWW",
+  forms: "Formularze",
+  products: "Produkty",
+  purchases: "Zakupy",
+  events: "Zdarzenia własne",
+  scenarios: "Scenariusze",
+  docs: "Dokumentacja",
+};
 
 export function LejkiPanel() {
   const [dark, setDark] = useState(false);
+  const [active, setActive] = useState("lejki");
   const [collapsed, setCollapsed] = useState(
     typeof window !== "undefined" ? window.innerWidth <= 1280 : false,
   );
@@ -27,7 +44,7 @@ export function LejkiPanel() {
     <div className="flex min-h-screen bg-bg">
       {/* Desktop / tablet sidebar */}
       <div className="hidden md:block">
-        <ContactSidebar collapsed={collapsed} />
+        <ContactSidebar collapsed={collapsed} active={active} onSelect={setActive} />
       </div>
 
       <div className="min-w-0 flex-1">
@@ -52,7 +69,7 @@ export function LejkiPanel() {
                 <span className="text-ink-4">/</span>
                 <span className="font-medium text-ink-1">{lead.name}</span>
                 <span className="text-ink-4">/</span>
-                <span className="text-ink-2">Lejki</span>
+                <span className="text-ink-2">{SECTION_LABEL[active] ?? "Lejki"}</span>
               </div>
             </div>
             <Button
@@ -68,36 +85,51 @@ export function LejkiPanel() {
         </header>
 
         <main className="px-4 py-8 md:px-8">
-          <div className="mb-6">
-            <h1 className="text-[22px] font-semibold tracking-tight text-ink-1">Lejki</h1>
-            <p className="mt-1 text-sm text-ink-3">
-              {lead.funnel.name} · zarządzanie statusem i punktacją
-            </p>
-          </div>
+          {active === "docs" ? (
+            <DocsPanel />
+          ) : active === "lejki" ? (
+            <>
+              <div className="mb-6">
+                <h1 className="text-[22px] font-semibold tracking-tight text-ink-1">Lejki</h1>
+                <p className="mt-1 text-sm text-ink-3">
+                  {lead.funnel.name} · zarządzanie statusem i punktacją
+                </p>
+              </div>
 
-          {/* Desktop split */}
-          <div className="hidden grid-cols-12 gap-8 lg:grid">
-            <div className="col-span-5">
-              <CurrentStateColumn />
-            </div>
-            <div className="col-span-7">
-              <HistoryColumn />
-            </div>
-          </div>
+              {/* Desktop split */}
+              <div className="hidden grid-cols-12 gap-8 lg:grid">
+                <div className="col-span-5">
+                  <CurrentStateColumn />
+                </div>
+                <div className="col-span-7">
+                  <HistoryColumn />
+                </div>
+              </div>
 
-          {/* Tablet/mobile tabs */}
-          <Tabs defaultValue="state" className="lg:hidden">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="state">Stan aktualny</TabsTrigger>
-              <TabsTrigger value="history">Historia</TabsTrigger>
-            </TabsList>
-            <TabsContent value="state" className="mt-4">
-              <CurrentStateColumn />
-            </TabsContent>
-            <TabsContent value="history" className="mt-4">
-              <HistoryColumn />
-            </TabsContent>
-          </Tabs>
+              {/* Tablet/mobile tabs */}
+              <Tabs defaultValue="state" className="lg:hidden">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="state">Stan aktualny</TabsTrigger>
+                  <TabsTrigger value="history">Historia</TabsTrigger>
+                </TabsList>
+                <TabsContent value="state" className="mt-4">
+                  <CurrentStateColumn />
+                </TabsContent>
+                <TabsContent value="history" className="mt-4">
+                  <HistoryColumn />
+                </TabsContent>
+              </Tabs>
+            </>
+          ) : (
+            <div className="mx-auto max-w-2xl rounded-lg border border-dashed border-border bg-surface p-12 text-center">
+              <h1 className="text-[22px] font-semibold tracking-tight text-ink-1">
+                {SECTION_LABEL[active]}
+              </h1>
+              <p className="mt-2 text-sm text-ink-3">
+                Ta sekcja nie jest częścią obecnego prototypu.
+              </p>
+            </div>
+          )}
         </main>
       </div>
     </div>
