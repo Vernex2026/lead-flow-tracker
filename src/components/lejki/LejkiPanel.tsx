@@ -81,7 +81,8 @@ export function LejkiPanel() {
           <>
             <motion.div
               key="backdrop"
-              className="fixed inset-0 z-40 bg-black/60 backdrop-blur-[2px] md:hidden"
+              aria-hidden
+              className="fixed inset-0 z-40 bg-ink-1/40 backdrop-blur-md md:hidden"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -90,12 +91,14 @@ export function LejkiPanel() {
             />
             <motion.div
               key="drawer"
-              className="fixed inset-y-0 left-0 z-50 w-[280px] md:hidden"
-              style={{ boxShadow: "8px 0 32px rgba(0,0,0,0.12)" }}
-              initial={{ x: -280 }}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Menu nawigacji"
+              className="fixed inset-y-0 left-0 z-50 w-[280px] max-w-[85vw] bg-surface shadow-2xl md:hidden"
+              initial={{ x: "-100%" }}
               animate={{ x: 0 }}
-              exit={{ x: -280 }}
-              transition={{ duration: 0.24, ease: "easeOut" }}
+              exit={{ x: "-100%" }}
+              transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
             >
               <ContactSidebar
                 collapsed={false}
@@ -170,7 +173,8 @@ export function LejkiPanel() {
               >
                 <a
                   href="https://github.com/Vernex2026/lead-flow-tracker/archive/refs/heads/main.zip"
-                  download="lead-flow-tracker.zip"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   aria-label="Pobierz kod źródłowy projektu (ZIP z GitHub)"
                   title="Pobierz kod źródłowy (.zip)"
                 >

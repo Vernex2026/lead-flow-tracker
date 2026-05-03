@@ -57,6 +57,10 @@ Tokens w [`src/index.css`](src/index.css). Mapowanie do Tailwind w [`tailwind.co
 ```bash
 # Instalacja (Bun preferowany — projekt ma bun.lockb)
 bun install
+# lub: npm install
+
+# Skopiuj env template (opcjonalnie — patrz sekcja "Hasło")
+cp .env.example .env.local
 
 # Dev server (port 5173)
 bun dev
@@ -74,6 +78,26 @@ bun test:watch     # watch mode
 # Lint
 bun lint
 ```
+
+## Hasło / kontrola dostępu
+
+Aplikacja ma frontend gate: jeśli zmienna `VITE_APP_PASSWORD_HASH` (SHA-256 hex) jest ustawiona, użytkownik musi wpisać hasło zanim zobaczy UI. Sesja trzyma się 24h w `localStorage`.
+
+**Wygeneruj własny hash:**
+```bash
+printf 'TwojeHaslo' | shasum -a 256 | awk '{print $1}'
+```
+
+**Lokalnie:** wklej do `.env.local`:
+```
+VITE_APP_PASSWORD_HASH=<wygenerowany hash>
+```
+
+**Vercel (produkcja):** Project → Settings → Environment Variables → dodaj `VITE_APP_PASSWORD_HASH` (Production + Preview). Następny deploy ustawi gate.
+
+**Wyłącz gate:** zostaw zmienną pustą lub usuń ją.
+
+> ⚠️ To NIE jest pełna ochrona — hash jest w bundlu front-endowym i ktoś z devtools może obejść gate. Zabezpiecza przed przypadkowymi gośćmi i indeksowaniem przez Google. Dla realnej ochrony użyj Vercel Pro Password Protection lub Cloudflare Access.
 
 ## Deploy
 
