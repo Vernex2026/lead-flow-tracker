@@ -1,0 +1,26 @@
+{
+  "name": "YouLead — CRM Marketing Automation",
+  "short_name": "YouLead",
+  "description": "Zarządzaj leadami, scoringiem i lejkami sprzedaży.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0f172a",
+  "lang": "pl-PL",
+  "dir": "ltr",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

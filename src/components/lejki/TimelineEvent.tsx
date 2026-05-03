@@ -181,7 +181,7 @@ export function TimelineEvent({ event }: { event: TEvent }) {
             <Button
               variant="ghost"
               size="sm"
-              className="h-7 gap-1.5 self-start text-ink-3 opacity-0 transition-opacity hover:bg-surface-2 hover:text-ink-1 group-hover:opacity-100 focus:opacity-100"
+              className="h-7 gap-1.5 self-start text-ink-3 opacity-100 transition-opacity hover:bg-surface-2 hover:text-ink-1 md:opacity-0 md:group-hover:opacity-100 md:focus:opacity-100"
             >
               <Pencil className="h-3.5 w-3.5" />
               <span className="text-[12px]">Edytuj</span>

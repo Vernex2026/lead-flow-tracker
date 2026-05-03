@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTheme } from "next-themes";
 import { Moon, Sun, PanelLeft, Menu, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -32,17 +33,14 @@ const SECTION_LABEL: Record<string, string> = {
 };
 
 export function LejkiPanel() {
-  const [dark, setDark] = useState(false);
+  const { resolvedTheme, setTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
   const [active, setActive] = useState("lejki");
   const [collapsed, setCollapsed] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editingCard, setEditingCard] = useState<EditingCard>(null);
   const lead = useCurrentLead();
   const setLeadId = useLejkiStore((s) => s.setLeadId);
-
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", dark);
-  }, [dark]);
 
   // ESC closes mobile drawer
   useEffect(() => {
@@ -166,11 +164,12 @@ export function LejkiPanel() {
             <Button
               variant="ghost"
               size="icon"
-              aria-label="Przełącz motyw"
-              onClick={() => setDark((d) => !d)}
+              aria-label={isDark ? "Przełącz na jasny motyw" : "Przełącz na ciemny motyw"}
+              aria-pressed={isDark}
+              onClick={() => setTheme(isDark ? "light" : "dark")}
               className="h-8 w-8"
             >
-              {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
           </div>
         </header>

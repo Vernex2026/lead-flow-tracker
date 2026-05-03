@@ -1,26 +1,54 @@
 <!doctype html>
-<html lang="en">
+<html lang="pl">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- TODO: Set the document title to the name of your application -->
-    <title>Lovable App</title>
-    <meta name="description" content="Lovable Generated Project" />
-    <meta name="author" content="Lovable" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0b1220" media="(prefers-color-scheme: dark)" />
 
-    <!-- TODO: Update og:title to match your application name -->
-    <meta property="og:title" content="Lovable App" />
-    <meta property="og:description" content="Lovable Generated Project" />
+    <title>YouLead — CRM Marketing Automation</title>
+    <meta
+      name="description"
+      content="Zarządzaj leadami, scoringiem i lejkami sprzedaży. Pełen audit trail każdej zmiany, optimistic updates z cofaniem, klawiaturowy workflow dla zespołów marketing automation."
+    />
+
+    <link rel="canonical" href="/" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta property="og:locale" content="pl_PL" />
+    <meta property="og:site_name" content="YouLead" />
+    <meta property="og:title" content="YouLead — CRM Marketing Automation" />
+    <meta
+      property="og:description"
+      content="Zarządzaj leadami, scoringiem i lejkami sprzedaży. Pełen audit trail każdej zmiany."
+    />
+    <meta property="og:image" content="/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@Lovable" />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta name="twitter:title" content="YouLead — CRM Marketing Automation" />
+    <meta
+      name="twitter:description"
+      content="Zarządzaj leadami, scoringiem i lejkami sprzedaży."
+    />
+    <meta name="twitter:image" content="/og-image.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   </head>
 
   <body>
     <div id="root"></div>
+    <noscript>
+      <p style="font-family: system-ui; padding: 2rem; text-align: center;">
+        Ta aplikacja wymaga włączonego JavaScript.
+      </p>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -17,11 +17,11 @@
     --border: 220 13% 91%;
     --border-strong: 220 9% 80%;
 
-    --accent-50: 354 100% 97%;
-    --accent-100: 353 96% 91%;
-    --accent-500: 354 70% 54%;
-    --accent-600: 356 70% 47%;
-    --accent-700: 357 65% 39%;
+    --accent-50: 232 100% 97%;
+    --accent-100: 232 96% 92%;
+    --accent-500: 232 56% 60%;
+    --accent-600: 232 56% 52%;
+    --accent-700: 232 56% 42%;
     --accent-fg: 0 0% 100%;
 
     --success-500: 152 60% 38%;
@@ -93,7 +93,10 @@
     background: hsl(var(--bg));
     color: hsl(var(--ink-1));
     font-family: "Inter", "SF Pro Text", system-ui, sans-serif;
+    font-feature-settings: "liga", "calt", "ss01", "cv11";
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
   .tnum {
