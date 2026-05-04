@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { Plus, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,7 +10,7 @@ import { NumberStepper } from "@/components/primitives/NumberStepper";
 import { AutoTextarea } from "@/components/primitives/AutoTextarea";
 import { useLejkiStore, useCurrentEvents, deriveCurrentScore } from "@/store/lejkiStore";
 import { currentUser } from "@/data/fixtures";
-import { useMotionConfig } from "@/hooks/useMotionConfig";
+import { EditableCard } from "./EditableCard";
 
 const SCORE_MIN = 0;
 const SCORE_MAX = 100;
@@ -51,23 +50,19 @@ function useCountUp(target: number, duration = COUNTUP_DURATION_MS) {
   return value;
 }
 
-export function ScoringCard({
-  isEditing,
-  onEditStart,
-  onClose,
-}: {
+interface ScoringCardProps {
   isEditing: boolean;
   onEditStart: () => void;
   onClose: () => void;
-}) {
+}
+
+export function ScoringCard({ isEditing, onEditStart, onClose }: ScoringCardProps) {
   const events = useCurrentEvents();
   const addEvent = useLejkiStore((s) => s.addEvent);
   const removeEvent = useLejkiStore((s) => s.removeEvent);
   const { score, delta } = deriveCurrentScore(events);
-  const { base } = useMotionConfig();
   const animScore = useCountUp(score);
 
-  const editing = isEditing;
   const [pts, setPts] = useState(DEFAULT_DELTA);
   const [comment, setComment] = useState("");
   const [when, setWhen] = useState(new Date().toISOString());
@@ -78,6 +73,13 @@ export function ScoringCard({
       .sort((a, b) => a.occurredAt.localeCompare(b.occurredAt))
       .map((e) => (e.payload.kind === "score_change" ? e.payload.to : 0));
   }, [events]);
+
+  const open = () => {
+    setPts(DEFAULT_DELTA);
+    setComment("");
+    setWhen(new Date().toISOString());
+    onEditStart();
+  };
 
   const save = () => {
     const newScore = clampScore(score + pts);
@@ -98,8 +100,6 @@ export function ScoringCard({
       edits: [],
     });
     onClose();
-    setPts(DEFAULT_DELTA);
-    setComment("");
     toast.success(`Punktacja: ${newScore}`, {
       action: { label: "Cofnij", onClick: () => removeEvent(id) },
       duration: TOAST_DURATION_MS,
@@ -109,91 +109,74 @@ export function ScoringCard({
   const newValue = clampScore(score + pts);
 
   return (
-    <section className="rounded-lg border border-border bg-surface p-5 shadow-xs">
-      <header className="mb-3 flex items-center justify-between gap-2">
-        <h3 className="text-[12px] font-semibold uppercase tracking-wider text-ink-3">
-          Punktacja
-        </h3>
-        {!editing && (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="-mr-1.5 h-7 gap-1 px-2 text-ink-2"
-            onClick={onEditStart}
-          >
-            <Plus className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Dodaj punkty</span>
-            <span className="sm:hidden">Dodaj</span>
-          </Button>
-        )}
-      </header>
+    <EditableCard
+      title="Punktacja"
+      editing={isEditing}
+      onEditStart={open}
+      editLabel="Dodaj punkty"
+      editLabelShort="Dodaj"
+      editIcon={Plus}
+      view={
+        <>
+          <div className="flex min-w-0 items-baseline gap-1.5">
+            <span className="tnum text-[28px] font-semibold leading-none text-ink-1">
+              {animScore}
+            </span>
+            <span className="tnum text-sm text-ink-3">/ {SCORE_MAX}</span>
+            <TrendPill delta={delta} suffix="vs. 7 dni" />
+          </div>
+          <ScoreBar value={animScore} />
+          <div className="mt-4 flex items-center justify-between gap-2">
+            <span className="text-[11px] uppercase tracking-wider text-ink-3">Trend</span>
+            <Sparkline values={sparkValues.length ? sparkValues : [0, 0]} />
+          </div>
+        </>
+      }
+      edit={
+        <div className="space-y-3">
+          <div className="flex items-baseline gap-2 text-[13px] text-ink-3">
+            Aktualnie:{" "}
+            <span className="tnum font-medium text-ink-1">{score}</span>
+            <span>→</span>
+            <span className="tnum font-semibold text-ink-1">{newValue}</span>
+            <span className="text-ink-3">/ {SCORE_MAX}</span>
+          </div>
+          <ScoreBar value={newValue} />
 
-      <div className="flex min-w-0 items-baseline gap-1.5">
-        <span className="tnum text-[28px] font-semibold leading-none text-ink-1">
-          {animScore}
-        </span>
-        <span className="tnum text-sm text-ink-3">/ 100</span>
-        <TrendPill delta={delta} suffix="vs. 7 dni" />
-      </div>
-
-      <ScoreBar value={animScore} />
-
-      <div className="mt-4 flex items-center justify-between gap-2">
-        <span className="text-[11px] uppercase tracking-wider text-ink-3">Trend</span>
-        <Sparkline values={sparkValues.length ? sparkValues : [0, 0]} />
-      </div>
-
-      <AnimatePresence>
-        {editing && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={base}
-            className="overflow-hidden"
-          >
-            <div className="mt-4 space-y-3 border-t border-border pt-4">
-              <div>
-                <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-ink-3">
-                  Punkty do dodania
-                </label>
-                <div className="flex flex-wrap items-center gap-2">
-                  <NumberStepper value={pts} onChange={setPts} />
-                  <span className="text-[12px] text-ink-3">
-                    →{" "}
-                    <span className="tnum font-medium text-ink-1">{newValue}</span>
-                    <span className="text-ink-3"> / 100</span>
-                  </span>
-                </div>
-              </div>
-              <div>
-                <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-ink-3">
-                  Data
-                </label>
-                <DateTimePicker value={when} onChange={setWhen} />
-              </div>
-              <div>
-                <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-ink-3">
-                  Komentarz
-                </label>
-                <AutoTextarea
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  placeholder="Opcjonalnie…"
-                />
-              </div>
-              <div className="flex justify-end gap-2 pt-1">
-                <Button variant="ghost" size="sm" onClick={onClose}>
-                  <X className="mr-1 h-3.5 w-3.5" />Anuluj
-                </Button>
-                <Button size="sm" onClick={save} disabled={pts === 0}>
-                  <Check className="mr-1 h-3.5 w-3.5" />Zapisz
-                </Button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </section>
+          <div>
+            <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-ink-3">
+              Punkty do dodania
+            </label>
+            <NumberStepper value={pts} onChange={setPts} />
+          </div>
+          <div>
+            <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-ink-3">
+              Data
+            </label>
+            <DateTimePicker value={when} onChange={setWhen} />
+          </div>
+          <div>
+            <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-ink-3">
+              Komentarz
+            </label>
+            <AutoTextarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="Opcjonalnie…"
+            />
+          </div>
+          <div className="flex justify-end gap-2 pt-1">
+            <Button variant="ghost" size="sm" onClick={onClose}>
+              <X className="mr-1 h-3.5 w-3.5" />
+              Anuluj
+            </Button>
+            <Button size="sm" onClick={save} disabled={pts === 0}>
+              <Check className="mr-1 h-3.5 w-3.5" />
+              Zapisz
+            </Button>
+          </div>
+        </div>
+      }
+    />
   );
 }
