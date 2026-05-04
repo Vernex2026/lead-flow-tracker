@@ -1,10 +1,13 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
-import { Lock, AlertCircle } from "lucide-react";
+import { AlertCircle, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { sha256Hex } from "@/lib/crypto";
+import { HOUR_MS } from "@/lib/time";
 
 const STORAGE_KEY = "yl_gate_token_v1";
 const SESSION_HOURS = 24;
+const SHA256_HEX_LENGTH = 64;
 
 // SHA-256 hash of "Vernex123!@#". Wbudowane jako fallback żeby gate
 // działał out-of-the-box (Lovable preview, Vercel bez env var, etc.).
@@ -16,33 +19,32 @@ const EXPECTED_HASH =
   (import.meta.env.VITE_APP_PASSWORD_HASH as string | undefined)?.trim() ||
   FALLBACK_HASH;
 
-async function sha256Hex(input: string): Promise<string> {
-  const buf = new TextEncoder().encode(input);
-  const hash = await crypto.subtle.digest("SHA-256", buf);
-  return Array.from(new Uint8Array(hash))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
+interface SessionToken {
+  hash: string;
+  exp: number;
 }
 
-function readSession(): boolean {
+const readSession = (): boolean => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return false;
-    const { hash, exp } = JSON.parse(raw) as { hash: string; exp: number };
-    if (Date.now() > exp) return false;
-    return hash === EXPECTED_HASH;
+    const { hash, exp } = JSON.parse(raw) as SessionToken;
+    return Date.now() <= exp && hash === EXPECTED_HASH;
   } catch {
     return false;
   }
-}
+};
 
-function writeSession() {
-  const exp = Date.now() + SESSION_HOURS * 60 * 60 * 1000;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({ hash: EXPECTED_HASH, exp }));
-}
+const writeSession = () => {
+  const token: SessionToken = {
+    hash: EXPECTED_HASH,
+    exp: Date.now() + SESSION_HOURS * HOUR_MS,
+  };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(token));
+};
 
 export function PasswordGate({ children }: { children: ReactNode }) {
-  const gateActive = EXPECTED_HASH.length === 64;
+  const gateActive = EXPECTED_HASH.length === SHA256_HEX_LENGTH;
   const [unlocked, setUnlocked] = useState(() => !gateActive || readSession());
   const [value, setValue] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -50,19 +52,19 @@ export function PasswordGate({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (unlocked) return;
-    const prev = document.title;
+    const previousTitle = document.title;
     document.title = "Dostęp ograniczony · YouLead";
     document.body.style.overflow = "hidden";
     return () => {
-      document.title = prev;
+      document.title = previousTitle;
       document.body.style.overflow = "";
     };
   }, [unlocked]);
 
   if (unlocked) return <>{children}</>;
 
-  const onSubmit = async (e: FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (event: FormEvent) => {
+    event.preventDefault();
     if (!value || submitting) return;
     setSubmitting(true);
     setError(null);
@@ -82,17 +84,15 @@ export function PasswordGate({ children }: { children: ReactNode }) {
 
   return (
     <>
-      {/* Aplikacja w tle — rozmyta, niedostępna dla focus/click/screen-reader */}
       <div
         aria-hidden="true"
-        // @ts-expect-error inert is valid HTML attribute (React 19+; works in 18 via DOM)
+        // @ts-expect-error inert is a valid HTML attribute (React 19+; works in 18 via DOM).
         inert=""
         className="pointer-events-none select-none [filter:blur(14px)_saturate(1.1)]"
       >
         {children}
       </div>
 
-      {/* Overlay z modalem hasła */}
       <div
         role="dialog"
         aria-modal="true"
@@ -115,8 +115,8 @@ export function PasswordGate({ children }: { children: ReactNode }) {
               id="gate-desc"
               className="mt-2 text-center text-[13px] leading-relaxed text-ink-3"
             >
-              Ten prototyp YouLead wymaga hasła. Jeśli go nie masz,
-              poproś osobę która udostępniła ci link.
+              Ten prototyp YouLead wymaga hasła. Jeśli go nie masz, poproś osobę,
+              która udostępniła ci link.
             </p>
 
             <form onSubmit={onSubmit} className="mt-6 space-y-3">
@@ -131,15 +131,15 @@ export function PasswordGate({ children }: { children: ReactNode }) {
                   id="gate-password"
                   type="password"
                   value={value}
-                  onChange={(e) => {
-                    setValue(e.target.value);
+                  onChange={(event) => {
+                    setValue(event.target.value);
                     if (error) setError(null);
                   }}
                   autoFocus
                   autoComplete="current-password"
                   spellCheck={false}
                   disabled={submitting}
-                  aria-invalid={!!error}
+                  aria-invalid={Boolean(error)}
                   aria-describedby={error ? "gate-error" : undefined}
                 />
               </div>
@@ -155,11 +155,7 @@ export function PasswordGate({ children }: { children: ReactNode }) {
                 </div>
               )}
 
-              <Button
-                type="submit"
-                disabled={!value || submitting}
-                className="w-full"
-              >
+              <Button type="submit" disabled={!value || submitting} className="w-full">
                 {submitting ? "Sprawdzam…" : "Odblokuj"}
               </Button>
             </form>

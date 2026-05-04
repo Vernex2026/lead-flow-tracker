@@ -16,9 +16,29 @@ import { DateTimePicker } from "@/components/primitives/DateTimePicker";
 import { RelativeTime } from "@/components/primitives/RelativeTime";
 import { useLejkiStore, useCurrentEvents, deriveCurrentStatus } from "@/store/lejkiStore";
 import { currentUser } from "@/data/fixtures";
+import type { TimelineEvent } from "@/data/types";
 import { STATUS_LABEL, STATUS_REASONS, type StatusCode } from "@/data/types";
 
 const STATUS_ORDER: StatusCode[] = ["new", "qualified", "opportunity", "won", "lost"];
+const TOAST_DURATION_MS = 5_000;
+
+interface StatusChangeInput {
+  from: StatusCode;
+  to: StatusCode;
+  reason: string;
+  comment: string;
+  occurredAt: string;
+}
+
+const buildStatusEvent = (input: StatusChangeInput): TimelineEvent => ({
+  id: `e_${Date.now()}`,
+  type: "status_change",
+  occurredAt: input.occurredAt,
+  createdAt: new Date().toISOString(),
+  actor: currentUser,
+  payload: { kind: "status_change", ...input },
+  edits: [],
+});
 
 export function StatusCard({
   isEditing,
@@ -32,55 +52,44 @@ export function StatusCard({
   const events = useCurrentEvents();
   const addEvent = useLejkiStore((s) => s.addEvent);
   const removeEvent = useLejkiStore((s) => s.removeEvent);
-  const cur = deriveCurrentStatus(events);
-  const editing = isEditing;
-  const [next, setNext] = useState<StatusCode>(cur.code);
-  const [reason, setReason] = useState<string>("");
-  const [comment, setComment] = useState("");
-  const [when, setWhen] = useState(new Date().toISOString());
+  const current = deriveCurrentStatus(events);
 
-  const open = () => {
-    setNext(cur.code);
+  const [next, setNext] = useState<StatusCode>(current.code);
+  const [reason, setReason] = useState("");
+  const [comment, setComment] = useState("");
+  const [occurredAt, setOccurredAt] = useState(() => new Date().toISOString());
+
+  const stage = STATUS_ORDER.indexOf(current.code) + 1;
+  const canSave = next !== current.code && reason.length > 0;
+
+  const startEdit = () => {
+    setNext(current.code);
     setReason("");
     setComment("");
-    setWhen(new Date().toISOString());
+    setOccurredAt(new Date().toISOString());
     onEditStart();
   };
 
-  const canSave = next !== cur.code && reason.length > 0;
-  const stage = STATUS_ORDER.indexOf(cur.code) + 1;
-
   const save = () => {
-    const id = `e_${Date.now()}`;
-    const ev = {
-      id,
-      type: "status_change" as const,
-      occurredAt: when,
-      createdAt: new Date().toISOString(),
-      actor: currentUser,
-      payload: { kind: "status_change" as const, from: cur.code, to: next, reason, comment },
-      edits: [],
-    };
-    addEvent(ev);
+    const event = buildStatusEvent({ from: current.code, to: next, reason, comment, occurredAt });
+    addEvent(event);
     onClose();
     toast.success(`Status: ${STATUS_LABEL[next]}`, {
-      action: { label: "Cofnij", onClick: () => removeEvent(id) },
-      duration: 5000,
+      action: { label: "Cofnij", onClick: () => removeEvent(event.id) },
+      duration: TOAST_DURATION_MS,
     });
   };
 
   return (
     <section className="rounded-lg border border-border bg-surface p-5 shadow-xs">
       <header className="mb-3 flex items-center justify-between gap-2">
-        <h3 className="text-[12px] font-semibold uppercase tracking-wider text-ink-3">
-          Status
-        </h3>
-        {!editing && (
+        <h3 className="text-[12px] font-semibold uppercase tracking-wider text-ink-3">Status</h3>
+        {!isEditing && (
           <Button
             variant="ghost"
             size="sm"
             className="-mr-1.5 h-7 gap-1 px-2 text-ink-2"
-            onClick={open}
+            onClick={startEdit}
           >
             <Pencil className="h-3.5 w-3.5" /> Edytuj
           </Button>
@@ -88,7 +97,7 @@ export function StatusCard({
       </header>
 
       <AnimatePresence mode="wait" initial={false}>
-        {!editing ? (
+        {!isEditing ? (
           <motion.div
             key="view"
             initial={{ opacity: 0 }}
@@ -96,12 +105,12 @@ export function StatusCard({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
           >
-            <StatusChip code={cur.code} size="lg" />
+            <StatusChip code={current.code} size="lg" />
             <dl className="mt-4 space-y-2 text-[13px]">
-              {cur.reason && (
+              {current.reason && (
                 <div className="flex flex-wrap items-baseline gap-x-2">
                   <dt className="shrink-0 text-ink-3">Powód</dt>
-                  <dd className="min-w-0 flex-1 text-ink-1">{cur.reason}</dd>
+                  <dd className="min-w-0 flex-1 text-ink-1">{current.reason}</dd>
                 </div>
               )}
               <div className="flex flex-wrap items-baseline gap-x-2">
@@ -110,12 +119,12 @@ export function StatusCard({
                   {stage} <span className="text-ink-3">z {STATUS_ORDER.length}</span>
                 </dd>
               </div>
-              {cur.at && (
+              {current.at && (
                 <div className="flex flex-wrap items-baseline gap-x-2">
                   <dt className="shrink-0 text-ink-3">Zmieniono</dt>
                   <dd className="min-w-0 flex-1 text-ink-1">
-                    <RelativeTime iso={cur.at} />{" "}
-                    <span className="text-ink-3">· {cur.by}</span>
+                    <RelativeTime iso={current.at} />{" "}
+                    <span className="text-ink-3">· {current.by}</span>
                   </dd>
                 </div>
               )}
@@ -166,7 +175,7 @@ export function StatusCard({
               <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-ink-3">
                 Data
               </label>
-              <DateTimePicker value={when} onChange={setWhen} />
+              <DateTimePicker value={occurredAt} onChange={setOccurredAt} />
             </div>
             <div>
               <label className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-ink-3">

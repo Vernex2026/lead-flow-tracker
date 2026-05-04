@@ -13,8 +13,16 @@ import {
 } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
-const HOURS = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, "0"));
-const MINUTES = Array.from({ length: 12 }, (_, i) => (i * 5).toString().padStart(2, "0"));
+const MINUTE_STEP = 5;
+const pad = (n: number) => n.toString().padStart(2, "0");
+const HOURS = Array.from({ length: 24 }, (_, i) => pad(i));
+const MINUTES = Array.from({ length: 60 / MINUTE_STEP }, (_, i) => pad(i * MINUTE_STEP));
+
+const snapMinute = (mm: string) => {
+  const minute = parseInt(mm, 10);
+  const snapped = Math.round(minute / MINUTE_STEP) * MINUTE_STEP;
+  return pad(snapped % 60);
+};
 
 export function DateTimePicker({
   value,
@@ -26,33 +34,21 @@ export function DateTimePicker({
   className?: string;
 }) {
   const date = parseISO(value);
-  const hh = format(date, "HH");
-  const mm = format(date, "mm");
 
-  const setDate = (d: Date | undefined) => {
-    if (!d) return;
-    const merged = new Date(d);
-    merged.setHours(date.getHours(), date.getMinutes(), 0, 0);
-    onChange(merged.toISOString());
+  const emit = (next: Date) => onChange(next.toISOString());
+
+  const setDay = (day: Date | undefined) => {
+    if (!day) return;
+    const next = new Date(day);
+    next.setHours(date.getHours(), date.getMinutes(), 0, 0);
+    emit(next);
   };
 
-  const setH = (h: string) => {
-    const merged = new Date(date);
-    merged.setHours(parseInt(h, 10), date.getMinutes(), 0, 0);
-    onChange(merged.toISOString());
+  const setTime = (hours: number, minutes: number) => {
+    const next = new Date(date);
+    next.setHours(hours, minutes, 0, 0);
+    emit(next);
   };
-  const setM = (m: string) => {
-    const merged = new Date(date);
-    merged.setHours(date.getHours(), parseInt(m, 10), 0, 0);
-    onChange(merged.toISOString());
-  };
-
-  // Snap displayed minute to closest 5-minute step for the select value.
-  const mmSnapped = MINUTES.includes(mm)
-    ? mm
-    : MINUTES.reduce((acc, cur) =>
-        Math.abs(parseInt(cur) - parseInt(mm)) < Math.abs(parseInt(acc) - parseInt(mm)) ? cur : acc,
-      );
 
   return (
     <div className={cn("flex flex-wrap gap-2", className)}>
@@ -70,17 +66,17 @@ export function DateTimePicker({
           <Calendar
             mode="single"
             selected={date}
-            onSelect={setDate}
+            onSelect={setDay}
             initialFocus
             locale={pl}
-            className={cn("p-3 pointer-events-auto")}
+            className="pointer-events-auto p-3"
           />
         </PopoverContent>
       </Popover>
 
       <div className="flex h-9 shrink-0 items-center gap-0.5 rounded-md border border-border bg-surface px-2">
         <Clock className="h-3.5 w-3.5 shrink-0 text-ink-3" aria-hidden />
-        <Select value={hh} onValueChange={setH}>
+        <Select value={pad(date.getHours())} onValueChange={(h) => setTime(parseInt(h, 10), date.getMinutes())}>
           <SelectTrigger
             aria-label="Godzina"
             className="tnum h-7 w-[44px] border-0 bg-transparent px-1 text-[13px] focus:ring-0 focus:ring-offset-0"
@@ -89,14 +85,12 @@ export function DateTimePicker({
           </SelectTrigger>
           <SelectContent className="max-h-[240px] min-w-0">
             {HOURS.map((h) => (
-              <SelectItem key={h} value={h} className="tnum">
-                {h}
-              </SelectItem>
+              <SelectItem key={h} value={h} className="tnum">{h}</SelectItem>
             ))}
           </SelectContent>
         </Select>
         <span className="text-ink-3" aria-hidden>:</span>
-        <Select value={mmSnapped} onValueChange={setM}>
+        <Select value={snapMinute(pad(date.getMinutes()))} onValueChange={(m) => setTime(date.getHours(), parseInt(m, 10))}>
           <SelectTrigger
             aria-label="Minuty"
             className="tnum h-7 w-[44px] border-0 bg-transparent px-1 text-[13px] focus:ring-0 focus:ring-offset-0"
@@ -105,9 +99,7 @@ export function DateTimePicker({
           </SelectTrigger>
           <SelectContent className="max-h-[240px] min-w-0">
             {MINUTES.map((m) => (
-              <SelectItem key={m} value={m} className="tnum">
-                {m}
-              </SelectItem>
+              <SelectItem key={m} value={m} className="tnum">{m}</SelectItem>
             ))}
           </SelectContent>
         </Select>

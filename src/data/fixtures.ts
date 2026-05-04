@@ -155,8 +155,3 @@ export const leads: LeadFixture[] = [
     events: [],
   },
 ];
-
-// Backwards-compat: default lead used by components that don't need switching.
-export const lead = leads[0];
-
-export const initialEvents = seleniumEvents;
