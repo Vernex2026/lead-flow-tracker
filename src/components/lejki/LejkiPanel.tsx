@@ -70,7 +70,7 @@ export function LejkiPanel() {
             </div>
 
             <Tabs defaultValue="state" className="min-h-0 flex-1 overflow-y-auto lg:hidden">
-              <TabsList className="grid w-full grid-cols-2">
+              <TabsList className="sticky top-0 z-20 grid w-full grid-cols-2 shadow-xs">
                 <TabsTrigger value="state">Stan aktualny</TabsTrigger>
                 <TabsTrigger value="history">Historia</TabsTrigger>
               </TabsList>
