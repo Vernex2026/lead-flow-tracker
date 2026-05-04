@@ -7,9 +7,7 @@ export function OwnerCard() {
   return (
     <section className="rounded-lg border border-border bg-surface p-5 shadow-xs">
       <header className="mb-3">
-        <h3 className="text-[12px] font-semibold uppercase tracking-wider text-ink-3">
-          Opiekun
-        </h3>
+        <h3 className="text-[12px] font-semibold uppercase tracking-wider text-ink-3">Opiekun</h3>
       </header>
       <div className="flex items-center gap-3">
         <Avatar name={owner.name} size={32} />
@@ -17,11 +15,7 @@ export function OwnerCard() {
           <div className="truncate text-sm font-medium text-ink-1">{owner.name}</div>
           {owner.email && <div className="truncate text-xs text-ink-3">{owner.email}</div>}
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="-mr-1.5 h-7 shrink-0 px-2 text-ink-2"
-        >
+        <Button variant="ghost" size="sm" className="-mr-1.5 h-7 shrink-0 px-2 text-ink-2">
           Zmień
         </Button>
       </div>

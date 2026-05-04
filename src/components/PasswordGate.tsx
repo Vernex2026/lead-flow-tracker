@@ -9,12 +9,10 @@ const SESSION_HOURS = 24;
 // SHA-256 hash of "Vernex123!@#". Wbudowane jako fallback żeby gate
 // działał out-of-the-box (Lovable preview, Vercel bez env var, etc.).
 // Możesz nadpisać dla innego hasła per environment przez VITE_APP_PASSWORD_HASH.
-const FALLBACK_HASH =
-  "161412538c1bc2b627cedc3e579a30fcc709bf783ed285e36e4b0bccf3b2fe4b";
+const FALLBACK_HASH = "161412538c1bc2b627cedc3e579a30fcc709bf783ed285e36e4b0bccf3b2fe4b";
 
 const EXPECTED_HASH =
-  (import.meta.env.VITE_APP_PASSWORD_HASH as string | undefined)?.trim() ||
-  FALLBACK_HASH;
+  (import.meta.env.VITE_APP_PASSWORD_HASH as string | undefined)?.trim() || FALLBACK_HASH;
 
 async function sha256Hex(input: string): Promise<string> {
   const buf = new TextEncoder().encode(input);
@@ -111,12 +109,9 @@ export function PasswordGate({ children }: { children: ReactNode }) {
             >
               Dostęp ograniczony
             </h1>
-            <p
-              id="gate-desc"
-              className="mt-2 text-center text-[13px] leading-relaxed text-ink-3"
-            >
-              Ten prototyp YouLead wymaga hasła. Jeśli go nie masz,
-              poproś osobę która udostępniła ci link.
+            <p id="gate-desc" className="mt-2 text-center text-[13px] leading-relaxed text-ink-3">
+              Ten prototyp YouLead wymaga hasła. Jeśli go nie masz, poproś osobę która udostępniła
+              ci link.
             </p>
 
             <form onSubmit={onSubmit} className="mt-6 space-y-3">
@@ -155,11 +150,7 @@ export function PasswordGate({ children }: { children: ReactNode }) {
                 </div>
               )}
 
-              <Button
-                type="submit"
-                disabled={!value || submitting}
-                className="w-full"
-              >
+              <Button type="submit" disabled={!value || submitting} className="w-full">
                 {submitting ? "Sprawdzam…" : "Odblokuj"}
               </Button>
             </form>

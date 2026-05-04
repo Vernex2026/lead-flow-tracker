@@ -27,10 +27,7 @@ export function HistoryColumn({
   const [sortDesc, setSortDesc] = useState(true);
   const [advanced, setAdvanced] = useState<AdvancedFilters>(EMPTY_FILTERS);
 
-  const noteCount = useMemo(
-    () => events.filter((e) => e.payload.kind === "note").length,
-    [events],
-  );
+  const noteCount = useMemo(() => events.filter((e) => e.payload.kind === "note").length, [events]);
 
   const { filtered, groups } = useFilteredEvents(events, {
     filter,
@@ -129,10 +126,39 @@ function EmptyHistory({
         aria-hidden
         className="text-ink-4"
       >
-        <line x1="20" y1="40" x2="160" y2="40" stroke="currentColor" strokeWidth="1" strokeDasharray="3 4" />
-        <circle cx="40" cy="40" r="4" stroke="currentColor" strokeWidth="1" fill="hsl(var(--surface))" />
-        <circle cx="90" cy="40" r="4" stroke="currentColor" strokeWidth="1" fill="hsl(var(--surface))" />
-        <circle cx="140" cy="40" r="4" stroke="currentColor" strokeWidth="1" fill="hsl(var(--surface))" />
+        <line
+          x1="20"
+          y1="40"
+          x2="160"
+          y2="40"
+          stroke="currentColor"
+          strokeWidth="1"
+          strokeDasharray="3 4"
+        />
+        <circle
+          cx="40"
+          cy="40"
+          r="4"
+          stroke="currentColor"
+          strokeWidth="1"
+          fill="hsl(var(--surface))"
+        />
+        <circle
+          cx="90"
+          cy="40"
+          r="4"
+          stroke="currentColor"
+          strokeWidth="1"
+          fill="hsl(var(--surface))"
+        />
+        <circle
+          cx="140"
+          cy="40"
+          r="4"
+          stroke="currentColor"
+          strokeWidth="1"
+          fill="hsl(var(--surface))"
+        />
       </svg>
       <p className="text-[14px] text-ink-2">Ten lead nie ma jeszcze historii aktywności.</p>
       <p className="max-w-[280px] text-[13px] text-ink-3">

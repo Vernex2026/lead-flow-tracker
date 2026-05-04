@@ -16,12 +16,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/primitives/Avatar";
 import { useLejkiStore } from "@/store/lejkiStore";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 type Item = { key: string; label: string; icon: LucideIcon };
 type Group = { title?: string; items: Item[] };
@@ -90,7 +85,7 @@ export function ContactSidebar({
       <aside
         className={cn(
           "flex h-full shrink-0 flex-col border-r border-border bg-surface transition-[width] duration-200",
-          collapsed ? "w-[52px]" : "w-[240px]",
+          collapsed ? "w-[52px]" : "w-[240px]"
         )}
       >
         <nav className="flex-1 overflow-y-auto px-1.5 py-3">
@@ -117,7 +112,7 @@ export function ContactSidebar({
                           : "gap-2.5 rounded-md px-2.5 py-2 text-[13px]",
                         isActive
                           ? "bg-surface-2 font-medium text-ink-1"
-                          : "text-ink-3 hover:bg-surface-2 hover:text-ink-1",
+                          : "text-ink-3 hover:bg-surface-2 hover:text-ink-1"
                       )}
                     >
                       {isActive && (
@@ -159,7 +154,7 @@ export function ContactSidebar({
         <div
           className={cn(
             "sticky bottom-0 border-t border-border bg-surface",
-            collapsed ? "flex justify-center px-0 py-3" : "flex items-center gap-2.5 px-3 py-3",
+            collapsed ? "flex justify-center px-0 py-3" : "flex items-center gap-2.5 px-3 py-3"
           )}
         >
           {collapsed ? (

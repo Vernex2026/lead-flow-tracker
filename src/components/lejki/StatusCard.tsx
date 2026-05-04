@@ -94,8 +94,7 @@ export function StatusCard({ isEditing, onEditStart, onClose }: StatusCardProps)
               <div className="flex flex-wrap items-baseline gap-x-2">
                 <dt className="shrink-0 text-ink-3">Zmieniono</dt>
                 <dd className="min-w-0 flex-1 text-ink-1">
-                  <RelativeTime iso={cur.at} />{" "}
-                  <span className="text-ink-3">· {cur.by}</span>
+                  <RelativeTime iso={cur.at} /> <span className="text-ink-3">· {cur.by}</span>
                 </dd>
               </div>
             )}

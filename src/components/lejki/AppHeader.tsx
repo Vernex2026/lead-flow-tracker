@@ -11,8 +11,7 @@ import { leads } from "@/data/fixtures";
 import { useCurrentLead, useLejkiStore } from "@/store/lejkiStore";
 import { SECTION_LABEL } from "./sections";
 
-const REPO_ZIP_URL =
-  "https://github.com/Vernex2026/lead-flow-tracker/archive/refs/heads/main.zip";
+const REPO_ZIP_URL = "https://github.com/Vernex2026/lead-flow-tracker/archive/refs/heads/main.zip";
 
 interface AppHeaderProps {
   active: string;
@@ -81,9 +80,7 @@ export function AppHeader({ active, onOpenDrawer, onToggleSidebar }: AppHeaderPr
                     <div className="flex flex-col">
                       <span className="text-[13px]">{l.name}</span>
                       <span className="text-[11px] text-ink-3">
-                        {l.events.length === 0
-                          ? "Bez historii"
-                          : `${l.events.length} zdarzeń`}
+                        {l.events.length === 0 ? "Bez historii" : `${l.events.length} zdarzeń`}
                       </span>
                     </div>
                   </DropdownMenuItem>

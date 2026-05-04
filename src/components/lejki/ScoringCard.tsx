@@ -135,8 +135,7 @@ export function ScoringCard({ isEditing, onEditStart, onClose }: ScoringCardProp
       edit={
         <div className="space-y-3">
           <div className="flex items-baseline gap-2 text-[13px] text-ink-3">
-            Aktualnie:{" "}
-            <span className="tnum font-medium text-ink-1">{score}</span>
+            Aktualnie: <span className="tnum font-medium text-ink-1">{score}</span>
             <span>→</span>
             <span className="tnum font-semibold text-ink-1">{newValue}</span>
             <span className="text-ink-3">/ {SCORE_MAX}</span>

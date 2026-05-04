@@ -23,7 +23,7 @@ export function Avatar({
       className={cn(
         "inline-flex shrink-0 items-center justify-center rounded-full bg-surface-2 font-medium text-ink-2",
         text,
-        className,
+        className
       )}
       aria-hidden
     >

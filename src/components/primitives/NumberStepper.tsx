@@ -19,7 +19,7 @@ export function NumberStepper({
     <div
       className={cn(
         "flex h-9 w-[120px] items-center rounded-md border border-input bg-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 ring-offset-background",
-        className,
+        className
       )}
     >
       <button

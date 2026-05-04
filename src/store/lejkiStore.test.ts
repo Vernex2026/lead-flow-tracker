@@ -4,11 +4,7 @@ import type { StatusCode, TimelineEvent, User } from "@/data/types";
 
 const user: User = { id: "u1", name: "Anna Kowal" };
 
-function makeStatusEvent(
-  to: StatusCode,
-  occurredAt: string,
-  reason = "Test",
-): TimelineEvent {
+function makeStatusEvent(to: StatusCode, occurredAt: string, reason = "Test"): TimelineEvent {
   return {
     id: `s_${occurredAt}`,
     type: "status_change",
@@ -20,11 +16,7 @@ function makeStatusEvent(
   };
 }
 
-function makeScoreEvent(
-  delta: number,
-  to: number,
-  occurredAt: string,
-): TimelineEvent {
+function makeScoreEvent(delta: number, to: number, occurredAt: string): TimelineEvent {
   return {
     id: `sc_${occurredAt}`,
     type: "score_change",

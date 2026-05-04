@@ -60,7 +60,7 @@ describe("useFilteredEvents", () => {
         query: "",
         sortDesc: true,
         advanced: EMPTY_FILTERS,
-      }),
+      })
     );
     expect(result.current.filtered).toHaveLength(4);
     expect(result.current.filtered[0].occurredAt).toBe("2026-05-04T12:00:00Z");
@@ -73,7 +73,7 @@ describe("useFilteredEvents", () => {
         query: "",
         sortDesc: true,
         advanced: EMPTY_FILTERS,
-      }),
+      })
     );
     expect(result.current.filtered).toHaveLength(2);
     expect(result.current.filtered.every((e) => e.payload.kind === "status_change")).toBe(true);
@@ -86,7 +86,7 @@ describe("useFilteredEvents", () => {
         query: "POLSKU",
         sortDesc: true,
         advanced: EMPTY_FILTERS,
-      }),
+      })
     );
     expect(result.current.filtered).toHaveLength(1);
     expect(result.current.filtered[0].payload.kind).toBe("note");
@@ -99,7 +99,7 @@ describe("useFilteredEvents", () => {
         query: "",
         sortDesc: false,
         advanced: EMPTY_FILTERS,
-      }),
+      })
     );
     expect(result.current.filtered[0].occurredAt).toBe("2026-05-03T10:00:00Z");
   });
@@ -111,11 +111,13 @@ describe("useFilteredEvents", () => {
         query: "",
         sortDesc: true,
         advanced: { ...EMPTY_FILTERS, statuses: ["won"] },
-      }),
+      })
     );
     expect(result.current.filtered).toHaveLength(1);
-    expect(result.current.filtered[0].payload.kind === "status_change" &&
-      result.current.filtered[0].payload.to).toBe("won");
+    expect(
+      result.current.filtered[0].payload.kind === "status_change" &&
+        result.current.filtered[0].payload.to
+    ).toBe("won");
   });
 
   it("advanced.period='7d' filtruje stare eventy", () => {
@@ -127,7 +129,7 @@ describe("useFilteredEvents", () => {
         query: "",
         sortDesc: true,
         advanced: { ...EMPTY_FILTERS, period: "7d" },
-      }),
+      })
     );
     expect(result.current.filtered).toHaveLength(1);
   });
@@ -139,7 +141,7 @@ describe("useFilteredEvents", () => {
         query: "",
         sortDesc: true,
         advanced: EMPTY_FILTERS,
-      }),
+      })
     );
     // 2 dni = 2 grupy: 2026-05-04 (3 eventy) + 2026-05-03 (1)
     expect(result.current.groups).toHaveLength(2);

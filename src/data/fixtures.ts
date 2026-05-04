@@ -34,7 +34,13 @@ const seleniumEvents: TimelineEvent[] = [
     occurredAt: "2026-05-03T09:15:00",
     createdAt: "2026-05-03T09:15:00",
     actor: { system: true },
-    payload: { kind: "score_change", delta: 15, from: 70, to: 85, comment: "Kliknął link w mailu kampanii Q2" },
+    payload: {
+      kind: "score_change",
+      delta: 15,
+      from: 70,
+      to: 85,
+      comment: "Kliknął link w mailu kampanii Q2",
+    },
     edits: [],
   },
   {
@@ -69,7 +75,13 @@ const seleniumEvents: TimelineEvent[] = [
     occurredAt: "2026-05-01T10:20:00",
     createdAt: "2026-05-01T10:20:00",
     actor: { system: true },
-    payload: { kind: "score_change", delta: 10, from: 55, to: 65, comment: "Otworzył mail kampanii Q2" },
+    payload: {
+      kind: "score_change",
+      delta: 10,
+      from: 55,
+      to: 65,
+      comment: "Otworzył mail kampanii Q2",
+    },
     edits: [],
   },
   {
@@ -87,7 +99,13 @@ const seleniumEvents: TimelineEvent[] = [
     occurredAt: "2026-04-29T15:30:00",
     createdAt: "2026-04-29T15:30:00",
     actor: { system: true },
-    payload: { kind: "score_change", delta: -5, from: 60, to: 55, comment: "Brak aktywności (7 dni)" },
+    payload: {
+      kind: "score_change",
+      delta: -5,
+      from: 60,
+      to: 55,
+      comment: "Brak aktywności (7 dni)",
+    },
     edits: [],
   },
   {
@@ -105,7 +123,13 @@ const seleniumEvents: TimelineEvent[] = [
     occurredAt: "2026-04-25T09:00:00",
     createdAt: "2026-04-25T09:00:00",
     actor: userJan,
-    payload: { kind: "status_change", from: "new", to: "new", reason: "Zaparkowane", comment: "Czekamy na decyzję." },
+    payload: {
+      kind: "status_change",
+      from: "new",
+      to: "new",
+      reason: "Zaparkowane",
+      comment: "Czekamy na decyzję.",
+    },
     edits: [],
   },
   {
@@ -123,7 +147,13 @@ const seleniumEvents: TimelineEvent[] = [
     occurredAt: "2026-04-23T16:00:00",
     createdAt: "2026-04-23T16:00:00",
     actor: { system: true },
-    payload: { kind: "score_change", delta: 10, from: 25, to: 35, comment: "Wypełnił formularz kontaktowy" },
+    payload: {
+      kind: "score_change",
+      delta: 10,
+      from: 25,
+      to: 35,
+      comment: "Wypełnił formularz kontaktowy",
+    },
     edits: [],
   },
   {
@@ -155,4 +185,3 @@ export const leads: LeadFixture[] = [
     events: [],
   },
 ];
-

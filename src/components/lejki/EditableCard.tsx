@@ -48,9 +48,7 @@ export function EditableCard({
   return (
     <section className="rounded-lg border border-border bg-surface p-5 shadow-xs">
       <header className="mb-3 flex items-center justify-between gap-2">
-        <h3 className="text-[12px] font-semibold uppercase tracking-wider text-ink-3">
-          {title}
-        </h3>
+        <h3 className="text-[12px] font-semibold uppercase tracking-wider text-ink-3">{title}</h3>
         {!editing && (
           <Button
             variant="ghost"

@@ -84,11 +84,13 @@ bun lint
 Aplikacja ma frontend gate: jeśli zmienna `VITE_APP_PASSWORD_HASH` (SHA-256 hex) jest ustawiona, użytkownik musi wpisać hasło zanim zobaczy UI. Sesja trzyma się 24h w `localStorage`.
 
 **Wygeneruj własny hash:**
+
 ```bash
 printf 'TwojeHaslo' | shasum -a 256 | awk '{print $1}'
 ```
 
 **Lokalnie:** wklej do `.env.local`:
+
 ```
 VITE_APP_PASSWORD_HASH=<wygenerowany hash>
 ```
@@ -104,11 +106,13 @@ VITE_APP_PASSWORD_HASH=<wygenerowany hash>
 Projekt jest standardowym Vite SPA — działa wszędzie gdzie host'uje się static files.
 
 **Vercel** (rekomendowane):
+
 ```bash
 vercel deploy --prod
 ```
 
 **Netlify / Cloudflare Pages:**
+
 - Build command: `vite build`
 - Output directory: `dist`
 

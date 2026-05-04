@@ -49,7 +49,7 @@
     --shadow-xs: 0 1px 2px 0 rgb(15 23 42 / 0.04);
     --shadow-sm: 0 1px 3px 0 rgb(15 23 42 / 0.06), 0 1px 2px -1px rgb(15 23 42 / 0.06);
     --shadow: 0 4px 12px -2px rgb(15 23 42 / 0.08), 0 2px 4px -2px rgb(15 23 42 / 0.05);
-    --shadow-lg: 0 12px 32px -8px rgb(15 23 42 / 0.10), 0 4px 8px -4px rgb(15 23 42 / 0.06);
+    --shadow-lg: 0 12px 32px -8px rgb(15 23 42 / 0.1), 0 4px 8px -4px rgb(15 23 42 / 0.06);
 
     /* shadcn shims mapped to our tokens */
     --background: var(--bg);
@@ -111,51 +111,60 @@
   }
 }
 
-  .docs-prose h3 {
-    font-size: 15px;
-    font-weight: 600;
-    color: hsl(var(--ink-1));
-    margin-top: 1.25rem;
-    margin-bottom: 0.5rem;
-    letter-spacing: -0.01em;
-  }
-  .docs-prose h3:first-child { margin-top: 0; }
-  .docs-prose ul, .docs-prose ol {
-    padding-left: 1.25rem;
-    list-style: revert;
-  }
-  .docs-prose ul li, .docs-prose ol li { margin-bottom: 0.25rem; }
-  .docs-prose code {
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-size: 12.5px;
-    padding: 1px 5px;
-    border-radius: 4px;
-    background: hsl(var(--surface-2));
-    color: hsl(var(--ink-1));
-  }
-  .docs-prose table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-    margin: 0.5rem 0;
-  }
-  .docs-prose th, .docs-prose td {
-    text-align: left;
-    padding: 8px 10px;
-    border-bottom: 1px solid hsl(var(--border));
-    vertical-align: top;
-  }
-  .docs-prose th {
-    font-weight: 600;
-    color: hsl(var(--ink-1));
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: hsl(var(--ink-3));
-  }
+.docs-prose h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: hsl(var(--ink-1));
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.01em;
+}
+.docs-prose h3:first-child {
+  margin-top: 0;
+}
+.docs-prose ul,
+.docs-prose ol {
+  padding-left: 1.25rem;
+  list-style: revert;
+}
+.docs-prose ul li,
+.docs-prose ol li {
+  margin-bottom: 0.25rem;
+}
+.docs-prose code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12.5px;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: hsl(var(--surface-2));
+  color: hsl(var(--ink-1));
+}
+.docs-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin: 0.5rem 0;
+}
+.docs-prose th,
+.docs-prose td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid hsl(var(--border));
+  vertical-align: top;
+}
+.docs-prose th {
+  font-weight: 600;
+  color: hsl(var(--ink-1));
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: hsl(var(--ink-3));
+}
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }

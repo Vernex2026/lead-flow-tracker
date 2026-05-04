@@ -121,7 +121,7 @@ function TimelineEventComponent({ event }: { event: TEvent }) {
         <span
           className={cn(
             "flex h-3.5 w-3.5 items-center justify-center rounded-full ring-2 ring-surface",
-            cls,
+            cls
           )}
         >
           {Icon && <Icon className="h-2.5 w-2.5 text-white" aria-hidden />}
@@ -162,9 +162,7 @@ function EditedBadge({ event }: { event: TEvent }) {
               <div className="text-ink-2">
                 {fmtDateTime(ed.editedAt)} · {ed.editedBy.name}
               </div>
-              <div className="text-ink-3">
-                {FIELD_LABELS[ed.field] ?? ed.field}: zmieniono
-              </div>
+              <div className="text-ink-3">{FIELD_LABELS[ed.field] ?? ed.field}: zmieniono</div>
             </li>
           ))}
         </ul>

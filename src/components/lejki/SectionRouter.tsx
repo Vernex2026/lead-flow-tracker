@@ -48,9 +48,7 @@ function SectionPlaceholder({ section }: { section: string }) {
       <h1 className="text-[22px] font-semibold tracking-tight text-ink-1">
         {SECTION_LABEL[section] ?? section}
       </h1>
-      <p className="mt-2 text-sm text-ink-3">
-        Ta sekcja nie jest częścią obecnego prototypu.
-      </p>
+      <p className="mt-2 text-sm text-ink-3">Ta sekcja nie jest częścią obecnego prototypu.</p>
     </div>
   );
 }

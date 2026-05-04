@@ -30,7 +30,7 @@ interface FilteredResult {
  */
 export function useFilteredEvents(
   events: TimelineEvent[],
-  { filter, query, sortDesc, advanced }: FilterParams,
+  { filter, query, sortDesc, advanced }: FilterParams
 ): FilteredResult {
   const filtered = useMemo<TimelineEvent[]>(() => {
     const q = query.trim().toLowerCase();
@@ -42,7 +42,7 @@ export function useFilteredEvents(
       .sort((a, b) =>
         sortDesc
           ? b.occurredAt.localeCompare(a.occurredAt)
-          : a.occurredAt.localeCompare(b.occurredAt),
+          : a.occurredAt.localeCompare(b.occurredAt)
       );
   }, [events, filter, query, sortDesc, advanced]);
 
@@ -71,7 +71,7 @@ function matchesEvent(
     q: string;
     periodMs: number | null;
     now: number;
-  },
+  }
 ): boolean {
   const { filter, advanced, q, periodMs, now } = ctx;
   const k = e.payload.kind;

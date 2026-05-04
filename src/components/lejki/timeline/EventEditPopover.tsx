@@ -46,7 +46,7 @@ export function EventEditPopover({ event }: EventEditPopoverProps) {
         occurredAt: when,
         ...(isNote ? { text: comment } : { comment }),
       },
-      newEdits,
+      newEdits
     );
     setOpen(false);
     toast.success("Wpis zaktualizowany", {
@@ -121,7 +121,7 @@ function getOldComment(event: TimelineEvent): string {
 
 function buildEditEntries(
   event: TimelineEvent,
-  { when, comment }: { when: string; comment: string },
+  { when, comment }: { when: string; comment: string }
 ): EditEntry[] {
   const entries: EditEntry[] = [];
   const editedAt = new Date().toISOString();

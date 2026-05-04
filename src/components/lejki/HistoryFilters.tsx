@@ -1,5 +1,12 @@
 import { useMemo } from "react";
-import { Search, ArrowDown, ArrowUp, SlidersHorizontal, X, Calendar as CalIcon } from "lucide-react";
+import {
+  Search,
+  ArrowDown,
+  ArrowUp,
+  SlidersHorizontal,
+  X,
+  Calendar as CalIcon,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -60,8 +67,8 @@ function Chip({
       className={cn(
         "rounded-full border px-2.5 py-1 text-[12px] font-medium transition-colors",
         active
-          ? tone ?? "border-ink-1 bg-ink-1 text-white"
-          : "border-border bg-surface text-ink-2 hover:bg-surface-2",
+          ? (tone ?? "border-ink-1 bg-ink-1 text-white")
+          : "border-border bg-surface text-ink-2 hover:bg-surface-2"
       )}
     >
       {children}
@@ -125,7 +132,7 @@ export function HistoryFilters({
               onClick={() => onFilter(f.key)}
               className={cn(
                 "rounded-[6px] px-2.5 py-1.5 text-[13px] font-medium transition-colors",
-                filter === f.key ? "bg-surface-2 text-ink-1" : "text-ink-3 hover:text-ink-1",
+                filter === f.key ? "bg-surface-2 text-ink-1" : "text-ink-3 hover:text-ink-1"
               )}
             >
               {f.label}
@@ -136,7 +143,7 @@ export function HistoryFilters({
               onClick={() => onFilter("note")}
               className={cn(
                 "rounded-[6px] px-2.5 py-1.5 text-[13px] font-medium transition-colors",
-                filter === "note" ? "bg-surface-2 text-ink-1" : "text-ink-3 hover:text-ink-1",
+                filter === "note" ? "bg-surface-2 text-ink-1" : "text-ink-3 hover:text-ink-1"
               )}
             >
               Notatki <span className="tnum text-ink-4">({noteCount})</span>
@@ -172,9 +179,7 @@ export function HistoryFilters({
               size="sm"
               className={cn(
                 "h-9 gap-1.5",
-                activeCount > 0
-                  ? "border-accent-500/40 bg-accent-50 text-accent-700"
-                  : "text-ink-2",
+                activeCount > 0 ? "border-accent-500/40 bg-accent-50 text-accent-700" : "text-ink-2"
               )}
             >
               <SlidersHorizontal className="h-3.5 w-3.5" />
@@ -266,7 +271,7 @@ export function HistoryFilters({
               onClick={() => toggleStatus(s)}
               className={cn(
                 "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium",
-                STATUS_TONE[s],
+                STATUS_TONE[s]
               )}
             >
               {STATUS_LABEL[s]}
@@ -281,8 +286,8 @@ export function HistoryFilters({
               {advanced.scoreDir === "up"
                 ? "↑ Wzrost"
                 : advanced.scoreDir === "down"
-                ? "↓ Spadek"
-                : "≥ +10 pkt"}
+                  ? "↓ Spadek"
+                  : "≥ +10 pkt"}
               <X className="h-2.5 w-2.5" />
             </button>
           )}

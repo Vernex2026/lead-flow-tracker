@@ -1,13 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { leads, currentUser } from "@/data/fixtures";
-import type {
-  EditEntry,
-  EventPayload,
-  StatusCode,
-  TimelineEvent,
-  User,
-} from "@/data/types";
+import type { EditEntry, EventPayload, StatusCode, TimelineEvent, User } from "@/data/types";
 
 type EventsByLead = Record<string, TimelineEvent[]>;
 
@@ -101,7 +95,7 @@ export const useLejkiStore = create<LejkiState>()(
                     payload: applyPayloadPatch(e.payload, patch),
                     edits: [...e.edits, ...newEdits],
                   }
-                : e,
+                : e
             ),
           },
         })),
@@ -118,12 +112,11 @@ export const useLejkiStore = create<LejkiState>()(
           eventsByLead: { ...initialEventsByLead, ...(p.eventsByLead ?? {}) },
         };
       },
-    },
-  ),
+    }
+  )
 );
 
-export const useCurrentEvents = () =>
-  useLejkiStore((s) => s.eventsByLead[s.leadId] ?? []);
+export const useCurrentEvents = () => useLejkiStore((s) => s.eventsByLead[s.leadId] ?? []);
 
 export const useCurrentLead = () => {
   const leadId = useLejkiStore((s) => s.leadId);

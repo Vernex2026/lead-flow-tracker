@@ -25,7 +25,7 @@ describe("PasswordGate", () => {
     render(
       <PasswordGate>
         <div data-testid="protected-content">SECRET</div>
-      </PasswordGate>,
+      </PasswordGate>
     );
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
@@ -39,7 +39,7 @@ describe("PasswordGate", () => {
     render(
       <PasswordGate>
         <div>SECRET</div>
-      </PasswordGate>,
+      </PasswordGate>
     );
 
     const input = screen.getByLabelText(/hasło/i);
@@ -54,7 +54,7 @@ describe("PasswordGate", () => {
     render(
       <PasswordGate>
         <div data-testid="protected-content">SECRET</div>
-      </PasswordGate>,
+      </PasswordGate>
     );
 
     const input = screen.getByLabelText(/hasło/i);
@@ -73,20 +73,19 @@ describe("PasswordGate", () => {
 
   it("respektuje istniejącą sesję — nie pokazuje formy", () => {
     // Pre-populate localStorage z ważną sesją
-    const FALLBACK_HASH =
-      "161412538c1bc2b627cedc3e579a30fcc709bf783ed285e36e4b0bccf3b2fe4b";
+    const FALLBACK_HASH = "161412538c1bc2b627cedc3e579a30fcc709bf783ed285e36e4b0bccf3b2fe4b";
     localStorage.setItem(
       "yl_gate_token_v1",
       JSON.stringify({
         hash: FALLBACK_HASH,
         exp: Date.now() + 86_400_000,
-      }),
+      })
     );
 
     render(
       <PasswordGate>
         <div data-testid="protected-content">SECRET</div>
-      </PasswordGate>,
+      </PasswordGate>
     );
 
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
@@ -99,13 +98,13 @@ describe("PasswordGate", () => {
       JSON.stringify({
         hash: "any",
         exp: Date.now() - 1000, // wygasła sekundę temu
-      }),
+      })
     );
 
     render(
       <PasswordGate>
         <div>SECRET</div>
-      </PasswordGate>,
+      </PasswordGate>
     );
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
@@ -117,7 +116,7 @@ describe("PasswordGate", () => {
     render(
       <PasswordGate>
         <div>SECRET</div>
-      </PasswordGate>,
+      </PasswordGate>
     );
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();

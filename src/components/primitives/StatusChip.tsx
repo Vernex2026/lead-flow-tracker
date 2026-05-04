@@ -23,8 +23,8 @@ export function StatusChip({
     size === "lg"
       ? "px-3 py-1.5 text-sm"
       : size === "sm"
-      ? "px-2 py-0.5 text-xs"
-      : "px-2.5 py-1 text-[13px]";
+        ? "px-2 py-0.5 text-xs"
+        : "px-2.5 py-1 text-[13px]";
   return (
     <span
       aria-label={`Status: ${STATUS_LABEL[code]}`}
@@ -32,7 +32,7 @@ export function StatusChip({
         "inline-flex items-center gap-1.5 rounded-full font-medium tracking-wide",
         map[code],
         sizing,
-        className,
+        className
       )}
     >
       <span className="h-1.5 w-1.5 rounded-full bg-current opacity-70" />

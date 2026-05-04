@@ -51,7 +51,7 @@ export function DateTimePicker({
   const mmSnapped = MINUTES.includes(mm)
     ? mm
     : MINUTES.reduce((acc, cur) =>
-        Math.abs(parseInt(cur) - parseInt(mm)) < Math.abs(parseInt(acc) - parseInt(mm)) ? cur : acc,
+        Math.abs(parseInt(cur) - parseInt(mm)) < Math.abs(parseInt(acc) - parseInt(mm)) ? cur : acc
       );
 
   return (
@@ -95,7 +95,9 @@ export function DateTimePicker({
             ))}
           </SelectContent>
         </Select>
-        <span className="text-ink-3" aria-hidden>:</span>
+        <span className="text-ink-3" aria-hidden>
+          :
+        </span>
         <Select value={mmSnapped} onValueChange={setM}>
           <SelectTrigger
             aria-label="Minuty"
