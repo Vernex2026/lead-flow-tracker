@@ -12,7 +12,7 @@ export function OwnerCard() {
         </h3>
       </header>
       <div className="flex items-center gap-3">
-        <Avatar name={owner.name} size={36} />
+        <Avatar name={owner.name} size={32} />
         <div className="min-w-0 flex-1">
           <div className="truncate text-sm font-medium text-ink-1">{owner.name}</div>
           {owner.email && <div className="truncate text-xs text-ink-3">{owner.email}</div>}

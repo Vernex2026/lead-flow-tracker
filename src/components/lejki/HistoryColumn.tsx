@@ -84,8 +84,12 @@ export function HistoryColumn({
     const m = new Map<string, typeof filtered>();
     for (const e of filtered) {
       const k = dayKey(e.occurredAt);
-      if (!m.has(k)) m.set(k, [] as any);
-      m.get(k)!.push(e);
+      const bucket = m.get(k);
+      if (bucket) {
+        bucket.push(e);
+      } else {
+        m.set(k, [e]);
+      }
     }
     return Array.from(m.entries());
   }, [filtered]);

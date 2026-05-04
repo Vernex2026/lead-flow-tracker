@@ -1,14 +1,56 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { leads, currentUser } from "@/data/fixtures";
-import type { EditEntry, StatusCode, TimelineEvent, User } from "@/data/types";
+import type {
+  EditEntry,
+  EventPayload,
+  StatusCode,
+  TimelineEvent,
+  User,
+} from "@/data/types";
 
 type EventsByLead = Record<string, TimelineEvent[]>;
+
+interface EventPatch {
+  occurredAt?: string;
+  comment?: string;
+  reason?: string;
+  text?: string;
+}
 
 const initialEventsByLead: EventsByLead = leads.reduce<EventsByLead>((acc, l) => {
   acc[l.id] = l.events;
   return acc;
 }, {});
+
+/**
+ * Type-safe payload patcher for discriminated union TimelineEvent.payload.
+ * Each event kind has different mutable fields — narrowing replaces the
+ * previous `as any` cast.
+ */
+function applyPayloadPatch(payload: EventPayload, patch: EventPatch): EventPayload {
+  switch (payload.kind) {
+    case "status_change":
+      return {
+        ...payload,
+        ...(patch.reason !== undefined && { reason: patch.reason }),
+        ...(patch.comment !== undefined && { comment: patch.comment }),
+      };
+    case "score_change":
+      return {
+        ...payload,
+        ...(patch.comment !== undefined && { comment: patch.comment }),
+      };
+    case "note":
+      return {
+        ...payload,
+        ...(patch.text !== undefined && { text: patch.text }),
+      };
+    case "owner_change":
+    case "system":
+      return payload;
+  }
+}
 
 interface LejkiState {
   leadId: string;
@@ -16,15 +58,7 @@ interface LejkiState {
   owner: User;
   setLeadId: (id: string) => void;
   addEvent: (e: TimelineEvent) => void;
-  updateEvent: (
-    id: string,
-    patch: Partial<Pick<TimelineEvent, "occurredAt">> & {
-      comment?: string;
-      reason?: string;
-      text?: string;
-    },
-    edits: EditEntry[],
-  ) => void;
+  updateEvent: (id: string, patch: EventPatch, edits: EditEntry[]) => void;
   replaceEvent: (id: string, prev: TimelineEvent) => void;
   removeEvent: (id: string) => void;
   setOwner: (u: User) => void;
@@ -59,19 +93,16 @@ export const useLejkiStore = create<LejkiState>()(
         set((s) => ({
           eventsByLead: {
             ...s.eventsByLead,
-            [s.leadId]: (s.eventsByLead[s.leadId] ?? []).map((e) => {
-              if (e.id !== id) return e;
-              const payload = { ...e.payload } as any;
-              if (patch.comment !== undefined && "comment" in payload) payload.comment = patch.comment;
-              if (patch.reason !== undefined && "reason" in payload) payload.reason = patch.reason;
-              if (patch.text !== undefined && payload.kind === "note") payload.text = patch.text;
-              return {
-                ...e,
-                occurredAt: patch.occurredAt ?? e.occurredAt,
-                payload,
-                edits: [...e.edits, ...newEdits],
-              };
-            }),
+            [s.leadId]: (s.eventsByLead[s.leadId] ?? []).map((e) =>
+              e.id === id
+                ? {
+                    ...e,
+                    occurredAt: patch.occurredAt ?? e.occurredAt,
+                    payload: applyPayloadPatch(e.payload, patch),
+                    edits: [...e.edits, ...newEdits],
+                  }
+                : e,
+            ),
           },
         })),
       setOwner: (u) => set({ owner: u }),
