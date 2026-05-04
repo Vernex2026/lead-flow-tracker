@@ -6,30 +6,31 @@ export interface AutoTextareaProps extends React.TextareaHTMLAttributes<HTMLText
 }
 
 export const AutoTextarea = React.forwardRef<HTMLTextAreaElement, AutoTextareaProps>(
-  ({ className, minRows = 2, onInput, value, ...props }, ref) => {
-    const innerRef = React.useRef<HTMLTextAreaElement | null>(null);
+  ({ className, minRows = 2, onInput, value, ...props }, forwardedRef) => {
+    const ref = React.useRef<HTMLTextAreaElement | null>(null);
 
-    React.useImperativeHandle(ref, () => innerRef.current as HTMLTextAreaElement);
+    React.useImperativeHandle<HTMLTextAreaElement | null, HTMLTextAreaElement | null>(
+      forwardedRef,
+      () => ref.current
+    );
 
     const resize = React.useCallback(() => {
-      const el = innerRef.current;
+      const el = ref.current;
       if (!el) return;
       el.style.height = "auto";
       el.style.height = `${el.scrollHeight}px`;
     }, []);
 
-    React.useEffect(() => {
-      resize();
-    }, [value, resize]);
+    React.useLayoutEffect(resize, [value, resize]);
 
     return (
       <textarea
-        ref={innerRef}
+        ref={ref}
         rows={minRows}
         value={value}
-        onInput={(e) => {
+        onInput={(event) => {
           resize();
-          onInput?.(e);
+          onInput?.(event);
         }}
         className={cn(
           "flex w-full resize-none rounded-md border border-input bg-background px-3 py-2 text-sm leading-relaxed",
