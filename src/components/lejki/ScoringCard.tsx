@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { Plus, Check, X } from "lucide-react";
@@ -12,25 +12,42 @@ import { AutoTextarea } from "@/components/primitives/AutoTextarea";
 import { useLejkiStore, useCurrentEvents, deriveCurrentScore } from "@/store/lejkiStore";
 import { currentUser } from "@/data/fixtures";
 
-function useCountUp(target: number, duration = 400) {
-  const [v, setV] = useState(target);
+const SCORE_MIN = 0;
+const SCORE_MAX = 100;
+const DEFAULT_DELTA = 5;
+const COUNTUP_DURATION_MS = 400;
+const TOAST_DURATION_MS = 5000;
+
+const clampScore = (n: number) => Math.max(SCORE_MIN, Math.min(SCORE_MAX, n));
+
+/**
+ * Animuje liczbę count-up między poprzednią a nową wartością przez RAF
+ * z cubic ease-out. Cleanup anuluje pending frame jeśli target się zmieni.
+ */
+function useCountUp(target: number, duration = COUNTUP_DURATION_MS) {
+  const [value, setValue] = useState(target);
+  const startRef = useRef(target);
+
   useEffect(() => {
-    const start = v;
+    const start = startRef.current;
     const diff = target - start;
     if (diff === 0) return;
+
     let raf = 0;
     const t0 = performance.now();
     const tick = (t: number) => {
       const p = Math.min(1, (t - t0) / duration);
       const eased = 1 - Math.pow(1 - p, 3);
-      setV(Math.round(start + diff * eased));
+      const next = Math.round(start + diff * eased);
+      setValue(next);
       if (p < 1) raf = requestAnimationFrame(tick);
+      else startRef.current = target;
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [target]);
-  return v;
+  }, [target, duration]);
+
+  return value;
 }
 
 export function ScoringCard({
@@ -49,40 +66,45 @@ export function ScoringCard({
   const animScore = useCountUp(score);
 
   const editing = isEditing;
-  const [pts, setPts] = useState(5);
+  const [pts, setPts] = useState(DEFAULT_DELTA);
   const [comment, setComment] = useState("");
   const [when, setWhen] = useState(new Date().toISOString());
 
-  const sparkValues = (() => {
-    const sorted = [...events]
+  const sparkValues = useMemo(() => {
+    return [...events]
       .filter((e) => e.payload.kind === "score_change")
-      .sort((a, b) => a.occurredAt.localeCompare(b.occurredAt));
-    return sorted.map((e) => (e.payload.kind === "score_change" ? e.payload.to : 0));
-  })();
+      .sort((a, b) => a.occurredAt.localeCompare(b.occurredAt))
+      .map((e) => (e.payload.kind === "score_change" ? e.payload.to : 0));
+  }, [events]);
 
   const save = () => {
-    const newScore = Math.max(0, Math.min(100, score + pts));
+    const newScore = clampScore(score + pts);
     const id = `e_${Date.now()}`;
-    const ev = {
+    addEvent({
       id,
-      type: "score_change" as const,
+      type: "score_change",
       occurredAt: when,
       createdAt: new Date().toISOString(),
       actor: currentUser,
-      payload: { kind: "score_change" as const, delta: newScore - score, from: score, to: newScore, comment },
+      payload: {
+        kind: "score_change",
+        delta: newScore - score,
+        from: score,
+        to: newScore,
+        comment,
+      },
       edits: [],
-    };
-    addEvent(ev);
+    });
     onClose();
-    setPts(5);
+    setPts(DEFAULT_DELTA);
     setComment("");
     toast.success(`Punktacja: ${newScore}`, {
       action: { label: "Cofnij", onClick: () => removeEvent(id) },
-      duration: 5000,
+      duration: TOAST_DURATION_MS,
     });
   };
 
-  const newValue = Math.max(0, Math.min(100, score + pts));
+  const newValue = clampScore(score + pts);
 
   return (
     <section className="rounded-lg border border-border bg-surface p-5 shadow-xs">

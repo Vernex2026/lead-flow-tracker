@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { memo, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowDown, ArrowUp, Bell, FileText, Pencil, UserCog } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -59,7 +59,7 @@ function detail(e: TEvent) {
   return null;
 }
 
-export function TimelineEvent({ event }: { event: TEvent }) {
+function TimelineEventComponent({ event }: { event: TEvent }) {
   const { Icon, cls } = dotFor(event);
   const editable =
     event.payload.kind === "status_change" ||
@@ -209,3 +209,6 @@ export function TimelineEvent({ event }: { event: TEvent }) {
     </motion.li>
   );
 }
+
+export const TimelineEvent = memo(TimelineEventComponent);
+TimelineEvent.displayName = "TimelineEvent";
