@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "next-themes";
 import { Moon, Sun, PanelLeft, Menu, ChevronDown, Github } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useMotionConfig } from "@/hooks/useMotionConfig";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   DropdownMenu,
@@ -41,6 +42,7 @@ export function LejkiPanel() {
   const [editingCard, setEditingCard] = useState<EditingCard>(null);
   const lead = useCurrentLead();
   const setLeadId = useLejkiStore((s) => s.setLeadId);
+  const { fast, slow } = useMotionConfig();
 
   // ESC closes mobile drawer
   useEffect(() => {
@@ -86,7 +88,7 @@ export function LejkiPanel() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
+              transition={fast}
               onClick={() => setDrawerOpen(false)}
             />
             <motion.div
@@ -98,7 +100,7 @@ export function LejkiPanel() {
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
-              transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+              transition={slow}
             >
               <ContactSidebar
                 collapsed={false}

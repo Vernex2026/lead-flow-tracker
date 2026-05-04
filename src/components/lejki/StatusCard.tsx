@@ -17,6 +17,7 @@ import { RelativeTime } from "@/components/primitives/RelativeTime";
 import { useLejkiStore, useCurrentEvents, deriveCurrentStatus } from "@/store/lejkiStore";
 import { currentUser } from "@/data/fixtures";
 import { STATUS_LABEL, STATUS_REASONS, type StatusCode } from "@/data/types";
+import { useMotionConfig } from "@/hooks/useMotionConfig";
 
 const STATUS_ORDER: StatusCode[] = ["new", "qualified", "opportunity", "won", "lost"];
 
@@ -33,6 +34,7 @@ export function StatusCard({
   const addEvent = useLejkiStore((s) => s.addEvent);
   const removeEvent = useLejkiStore((s) => s.removeEvent);
   const cur = deriveCurrentStatus(events);
+  const { base } = useMotionConfig();
   const editing = isEditing;
   const [next, setNext] = useState<StatusCode>(cur.code);
   const [reason, setReason] = useState<string>("");
@@ -94,7 +96,7 @@ export function StatusCard({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={base}
           >
             <StatusChip code={cur.code} size="lg" />
             <dl className="mt-4 space-y-2 text-[13px]">
@@ -127,7 +129,7 @@ export function StatusCard({
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={base}
             className="space-y-3"
           >
             <div>

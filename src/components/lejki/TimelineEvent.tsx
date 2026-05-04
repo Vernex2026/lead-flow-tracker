@@ -1,5 +1,6 @@
 import { memo, useState } from "react";
 import { motion } from "framer-motion";
+import { useMotionConfig } from "@/hooks/useMotionConfig";
 import { ArrowDown, ArrowUp, Bell, FileText, Pencil, UserCog } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -60,6 +61,7 @@ function detail(e: TEvent) {
 }
 
 function TimelineEventComponent({ event }: { event: TEvent }) {
+  const { base } = useMotionConfig();
   const { Icon, cls } = dotFor(event);
   const editable =
     event.payload.kind === "status_change" ||
@@ -132,7 +134,7 @@ function TimelineEventComponent({ event }: { event: TEvent }) {
       initial={{ opacity: 0, y: -6 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -6 }}
-      transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
+      transition={base}
       className="group relative -mx-2 flex gap-3 rounded-md px-2 py-2.5 transition-colors hover:bg-surface-2"
     >
       <div className="relative z-[1] flex w-4 justify-center pt-1.5">

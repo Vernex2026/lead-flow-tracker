@@ -11,6 +11,7 @@ import { NumberStepper } from "@/components/primitives/NumberStepper";
 import { AutoTextarea } from "@/components/primitives/AutoTextarea";
 import { useLejkiStore, useCurrentEvents, deriveCurrentScore } from "@/store/lejkiStore";
 import { currentUser } from "@/data/fixtures";
+import { useMotionConfig } from "@/hooks/useMotionConfig";
 
 const SCORE_MIN = 0;
 const SCORE_MAX = 100;
@@ -63,6 +64,7 @@ export function ScoringCard({
   const addEvent = useLejkiStore((s) => s.addEvent);
   const removeEvent = useLejkiStore((s) => s.removeEvent);
   const { score, delta } = deriveCurrentScore(events);
+  const { base } = useMotionConfig();
   const animScore = useCountUp(score);
 
   const editing = isEditing;
@@ -147,7 +149,7 @@ export function ScoringCard({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={base}
             className="overflow-hidden"
           >
             <div className="mt-4 space-y-3 border-t border-border pt-4">
