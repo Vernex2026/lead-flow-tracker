@@ -1,6 +1,127 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --breakpoint-2xl: 1440px;
+
+  /* base */
+  --color-bg: hsl(var(--bg));
+  --color-background: hsl(var(--bg));
+  --color-foreground: hsl(var(--ink-1));
+  --color-surface: hsl(var(--surface));
+  --color-surface-2: hsl(var(--surface-2));
+  --color-surface-3: hsl(var(--surface-3));
+  --color-ink-1: hsl(var(--ink-1));
+  --color-ink-2: hsl(var(--ink-2));
+  --color-ink-3: hsl(var(--ink-3));
+  --color-ink-4: hsl(var(--ink-4));
+  --color-border: hsl(var(--border));
+  --color-border-strong: hsl(var(--border-strong));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  /* accent */
+  --color-accent: hsl(var(--accent-600));
+  --color-accent-foreground: hsl(var(--accent-fg));
+  --color-accent-50: hsl(var(--accent-50));
+  --color-accent-100: hsl(var(--accent-100));
+  --color-accent-500: hsl(var(--accent-500));
+  --color-accent-600: hsl(var(--accent-600));
+  --color-accent-700: hsl(var(--accent-700));
+
+  /* semantic */
+  --color-success: hsl(var(--success-500));
+  --color-success-50: hsl(var(--success-50));
+  --color-warn: hsl(var(--warn-500));
+  --color-warn-50: hsl(var(--warn-50));
+  --color-danger: hsl(var(--danger-500));
+  --color-info: hsl(var(--info-500));
+  --color-info-50: hsl(var(--info-50));
+
+  /* shadcn shims */
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  /* status (lead pipeline) */
+  --color-status-new: hsl(var(--status-new));
+  --color-status-new-fg: hsl(var(--status-new-fg));
+  --color-status-qualified: hsl(var(--status-qualified));
+  --color-status-qualified-fg: hsl(var(--status-qualified-fg));
+  --color-status-opportunity: hsl(var(--status-opportunity));
+  --color-status-opportunity-fg: hsl(var(--status-opportunity-fg));
+  --color-status-won: hsl(var(--status-won));
+  --color-status-won-fg: hsl(var(--status-won-fg));
+  --color-status-lost: hsl(var(--status-lost));
+  --color-status-lost-fg: hsl(var(--status-lost-fg));
+
+  /* radius */
+  --radius-lg: 14px;
+  --radius-md: 10px;
+  --radius-sm: 6px;
+
+  /* shadows */
+  --shadow-xs: 0 1px 2px 0 rgb(15 23 42 / 0.04);
+  --shadow-sm: 0 1px 3px 0 rgb(15 23 42 / 0.06), 0 1px 2px -1px rgb(15 23 42 / 0.06);
+  --shadow-DEFAULT: 0 4px 12px -2px rgb(15 23 42 / 0.08), 0 2px 4px -2px rgb(15 23 42 / 0.05);
+  --shadow-lg: 0 12px 32px -8px rgb(15 23 42 / 0.1), 0 4px 8px -4px rgb(15 23 42 / 0.06);
+
+  /* animations */
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-fade-in-up: fade-in-up 240ms cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-shake: shake 180ms ease-in-out;
+}
+
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
 
 @layer base {
   :root {
@@ -11,8 +132,8 @@
 
     --ink-1: 222 47% 11%;
     --ink-2: 215 25% 27%;
-    --ink-3: 215 18% 40%; /* WCAG AA on surface-2 (was 47% — barely passing) */
-    --ink-4: 215 16% 55%; /* WCAG AA on surface-3 (was 65% — failing) */
+    --ink-3: 215 18% 40%;
+    --ink-4: 215 16% 55%;
 
     --border: 220 13% 91%;
     --border-strong: 220 9% 80%;
@@ -45,11 +166,6 @@
 
     --radius: 10px;
     --radius-lg: 14px;
-
-    --shadow-xs: 0 1px 2px 0 rgb(15 23 42 / 0.04);
-    --shadow-sm: 0 1px 3px 0 rgb(15 23 42 / 0.06), 0 1px 2px -1px rgb(15 23 42 / 0.06);
-    --shadow: 0 4px 12px -2px rgb(15 23 42 / 0.08), 0 2px 4px -2px rgb(15 23 42 / 0.05);
-    --shadow-lg: 0 12px 32px -8px rgb(15 23 42 / 0.1), 0 4px 8px -4px rgb(15 23 42 / 0.06);
 
     /* shadcn shims mapped to our tokens */
     --background: var(--bg);
@@ -85,7 +201,13 @@
     --border-strong: 217 24% 28%;
   }
 
-  * {
+  /*
+   * Tailwind v4 default border color is currentColor (was gray-200 in v3).
+   * Keep our token-driven default for parity with prior visual.
+   */
+  *,
+  ::before,
+  ::after {
     border-color: hsl(var(--border));
   }
 
@@ -154,7 +276,6 @@
 }
 .docs-prose th {
   font-weight: 600;
-  color: hsl(var(--ink-1));
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.06em;
