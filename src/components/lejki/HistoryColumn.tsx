@@ -6,12 +6,8 @@ import { useCurrentEvents } from "@/store/lejkiStore";
 import { dayLabel } from "@/lib/format";
 import { useFilteredEvents } from "@/hooks/useFilteredEvents";
 import { TimelineEvent } from "./TimelineEvent";
-import {
-  HistoryFilters,
-  EMPTY_FILTERS,
-  type FilterKind,
-  type AdvancedFilters,
-} from "./HistoryFilters";
+import { HistoryFilters } from "./HistoryFilters";
+import { EMPTY_FILTERS, type AdvancedFilters, type FilterKind } from "./historyFilter.types";
 
 export function HistoryColumn({
   onSetStatus,

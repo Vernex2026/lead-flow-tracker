@@ -12,22 +12,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { STATUS_LABEL, type StatusCode } from "@/data/types";
-
-export type FilterKind = "all" | "status" | "score" | "note" | "system";
-export type ScoreDir = "up" | "down" | "big" | null;
-export type Period = "7d" | "30d" | "90d" | null;
-
-export interface AdvancedFilters {
-  statuses: StatusCode[];
-  scoreDir: ScoreDir;
-  period: Period;
-}
-
-export const EMPTY_FILTERS: AdvancedFilters = {
-  statuses: [],
-  scoreDir: null,
-  period: null,
-};
+import {
+  EMPTY_FILTERS,
+  type AdvancedFilters,
+  type FilterKind,
+  type Period,
+  type ScoreDir,
+} from "./historyFilter.types";
 
 const PRIMARY: { key: FilterKind; label: string }[] = [
   { key: "all", label: "Wszystko" },

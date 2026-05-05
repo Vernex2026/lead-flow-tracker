@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { renderHook } from "@testing-library/react";
 import { useFilteredEvents } from "./useFilteredEvents";
-import { EMPTY_FILTERS } from "@/components/lejki/HistoryFilters";
+import { EMPTY_FILTERS } from "@/components/lejki/historyFilter.types";
 import type { TimelineEvent, User } from "@/data/types";
 
 const user: User = { id: "u1", name: "Anna" };

@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { dayKey } from "@/lib/format";
 import type { TimelineEvent } from "@/data/types";
-import type { AdvancedFilters, FilterKind } from "@/components/lejki/HistoryFilters";
+import type { AdvancedFilters, FilterKind } from "@/components/lejki/historyFilter.types";
 
 const DAY_MS = 86_400_000;
 
