@@ -71,7 +71,7 @@ export function DateTimePicker({
             mode="single"
             selected={date}
             onSelect={setDate}
-            initialFocus
+            autoFocus
             locale={pl}
             className={cn("p-3 pointer-events-auto")}
           />

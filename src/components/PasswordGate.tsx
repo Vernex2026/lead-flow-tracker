@@ -83,8 +83,7 @@ export function PasswordGate({ children }: { children: ReactNode }) {
       {/* Aplikacja w tle — rozmyta, niedostępna dla focus/click/screen-reader */}
       <div
         aria-hidden="true"
-        // @ts-expect-error inert is valid HTML attribute (React 19+; works in 18 via DOM)
-        inert=""
+        inert
         className="pointer-events-none select-none [filter:blur(14px)_saturate(1.1)]"
       >
         {children}

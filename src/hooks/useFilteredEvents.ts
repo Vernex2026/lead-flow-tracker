@@ -35,6 +35,10 @@ export function useFilteredEvents(
   const filtered = useMemo<TimelineEvent[]>(() => {
     const q = query.trim().toLowerCase();
     const periodMs = advanced.period ? PERIOD_TO_MS[advanced.period] : null;
+    // Snapshot przy filter recompute — chcemy "now" z momentu w którym user
+    // zmienił filtr, nie reactive tick. useMemo deps gwarantują że Date.now()
+    // wywołuje się tylko gdy któryś filtr/event się zmieni.
+    // eslint-disable-next-line react-hooks/purity
     const now = Date.now();
 
     return events
