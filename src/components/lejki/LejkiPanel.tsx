@@ -3,6 +3,7 @@ import { ContactSidebar } from "./ContactSidebar";
 import { AppHeader } from "./AppHeader";
 import { MobileDrawer } from "./MobileDrawer";
 import { SectionRouter } from "./SectionRouter";
+import type { SectionKey } from "./sections";
 import type { EditingCard } from "./CurrentStateColumn";
 
 const TABLET_BREAKPOINT = "(max-width: 1023px)";
@@ -13,7 +14,7 @@ const TABLET_BREAKPOINT = "(max-width: 1023px)";
  * — child komponenty są stateless props consumers.
  */
 export function LejkiPanel() {
-  const [active, setActive] = useState("lejki");
+  const [active, setActive] = useState<SectionKey>("lejki");
   const [collapsed, setCollapsed] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editingCard, setEditingCard] = useState<EditingCard>(null);

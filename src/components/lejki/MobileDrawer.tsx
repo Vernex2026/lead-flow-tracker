@@ -2,12 +2,13 @@ import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ContactSidebar } from "./ContactSidebar";
 import { useMotionConfig } from "@/hooks/useMotionConfig";
+import type { SectionKey } from "./sections";
 
 interface MobileDrawerProps {
   open: boolean;
-  active: string;
+  active: SectionKey;
   onClose: () => void;
-  onSelect: (key: string) => void;
+  onSelect: (key: SectionKey) => void;
 }
 
 /**

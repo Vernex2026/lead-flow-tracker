@@ -102,7 +102,7 @@ export const useLejkiStore = create<LejkiState>()(
       setOwner: (u) => set({ owner: u }),
     }),
     {
-      name: "lejki:state-v2",
+      name: "vernex.lejki.v2",
       merge: (persisted, current) => {
         const p = (persisted ?? {}) as Partial<LejkiState>;
         return {

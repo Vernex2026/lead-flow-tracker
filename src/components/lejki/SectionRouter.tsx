@@ -1,11 +1,11 @@
 import type { ReactNode } from "react";
 import { DocsPanel } from "./DocsPanel";
 import { LejkiSection } from "./LejkiSection";
-import { SECTION_LABEL } from "./sections";
+import { getSectionLabel, type SectionKey } from "./sections";
 import type { EditingCard } from "./CurrentStateColumn";
 
 interface SectionRouterProps {
-  active: string;
+  active: SectionKey;
   editingCard: EditingCard;
   setEditingCard: (c: EditingCard) => void;
   onSetStatus: () => void;
@@ -42,11 +42,11 @@ export function SectionRouter({
   );
 }
 
-function SectionPlaceholder({ section }: { section: string }) {
+function SectionPlaceholder({ section }: { section: SectionKey }) {
   return (
     <div className="mx-auto max-w-2xl rounded-lg border border-dashed border-border bg-surface p-12 text-center">
       <h1 className="text-[22px] font-semibold tracking-tight text-ink-1">
-        {SECTION_LABEL[section] ?? section}
+        {getSectionLabel(section, section)}
       </h1>
       <p className="mt-2 text-sm text-ink-3">Ta sekcja nie jest częścią obecnego prototypu.</p>
     </div>

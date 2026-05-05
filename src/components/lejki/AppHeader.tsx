@@ -9,12 +9,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { leads } from "@/data/fixtures";
 import { useCurrentLead, useLejkiStore } from "@/store/lejkiStore";
-import { SECTION_LABEL } from "./sections";
+import { getSectionLabel, type SectionKey } from "./sections";
 
 const REPO_ZIP_URL = "https://github.com/Vernex2026/lead-flow-tracker/archive/refs/heads/main.zip";
 
 interface AppHeaderProps {
-  active: string;
+  active: SectionKey;
   onOpenDrawer: () => void;
   onToggleSidebar: () => void;
 }
@@ -90,7 +90,7 @@ export function AppHeader({ active, onOpenDrawer, onToggleSidebar }: AppHeaderPr
             <span className="text-ink-4" aria-hidden>
               /
             </span>
-            <span className="text-ink-2">{SECTION_LABEL[active] ?? "Lejki"}</span>
+            <span className="text-ink-2">{getSectionLabel(active)}</span>
           </nav>
         </div>
 

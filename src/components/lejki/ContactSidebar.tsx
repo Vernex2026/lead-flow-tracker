@@ -17,8 +17,9 @@ import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/primitives/Avatar";
 import { useLejkiStore } from "@/store/lejkiStore";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import type { SectionKey } from "./sections";
 
-type Item = { key: string; label: string; icon: LucideIcon };
+type Item = { key: SectionKey; label: string; icon: LucideIcon };
 type Group = { title?: string; items: Item[] };
 
 const GROUPS: Group[] = [
@@ -69,13 +70,13 @@ export function ContactSidebar({
   onNavigate,
 }: {
   collapsed: boolean;
-  active: string;
-  onSelect: (key: string) => void;
+  active: SectionKey;
+  onSelect: (key: SectionKey) => void;
   onNavigate?: () => void;
 }) {
   const owner = useLejkiStore((s) => s.owner);
 
-  const handleSelect = (k: string) => {
+  const handleSelect = (k: SectionKey) => {
     onSelect(k);
     onNavigate?.();
   };
